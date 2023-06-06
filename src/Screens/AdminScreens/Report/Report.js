@@ -201,19 +201,12 @@ const Report = () => {
 
   return (
     <ScrollView>
-      {/* <DatePickerComponent
-     fromDate={fromDate}
-     toDate={toDate}
-     handleFilter={handleFilter}
-     setFromDate={setFromDate}
-     setToDate={setToDate}
-    /> */}
-
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-around',
-          marginHorizontal: 10,
+          paddingHorizontal: 15,
+          backgroundColor: '#fff',
         }}>
         <View style={styles.searchBarView}>
           <View style={styles.centerStyles}>
@@ -228,14 +221,6 @@ const Report = () => {
             placeholderTextColor={globalColors.grey}
             style={styles.searchInput}
           />
-          <TouchableOpacity
-            style={styles.centerStyles}
-            // onPress={() => {
-            //   setSortModal(true);
-            // }}
-          >
-            {/* <Image source={sort} style={styles.searchIcon} /> */}
-          </TouchableOpacity>
         </View>
 
         <TouchableOpacity onPress={() => generateAndDownloadPDF(asycData)}>
@@ -245,7 +230,7 @@ const Report = () => {
               height: RFValue(40),
               padding: RFValue(10),
               borderRadius: 5,
-              backgroundColor: globalColors.primaryTheme,
+              backgroundColor: globalColors.card,
             }}>
             <Text style={{color: globalColors.white}}>Export PDF</Text>
           </View>
@@ -257,7 +242,7 @@ const Report = () => {
           <Row
             data={['Sr.no', 'Name', 'Title', 'Category']}
             style={styles.head}
-            textStyle={styles.text}
+            textStyle={styles.headText}
           />
 
           {filterTableData().map((rowData, index) => (
@@ -267,22 +252,19 @@ const Report = () => {
                 styles.row,
                 index % 2 === 0
                   ? {backgroundColor: globalColors.white}
-                  : {backgroundColor: '#c2d6d6'},
+                  : {backgroundColor: '#ebeffa'},
               ]}>
               {/* {filteredData.length > 0 ? (
                 filteredData.map((item, index) => (
                   <> */}
-                    <Cell data={index + 1} textStyle={styles.text} />
-                    <Cell data={rowData.name} textStyle={styles.text} />
-                    <Cell
-                      data={rowData.name_of_business}
-                      textStyle={styles.text}
-                    />
-                    <Cell
-                      data={rowData.business_category_name}
-                      textStyle={styles.text}
-                    />
-                  {/* </>
+              <Cell data={index + 1} textStyle={styles.text} />
+              <Cell data={rowData.name} textStyle={styles.text} />
+              <Cell data={rowData.name_of_business} textStyle={styles.text} />
+              <Cell
+                data={rowData.business_category_name}
+                textStyle={styles.text}
+              />
+              {/* </>
                 ))
               ) : (
                 <Text style={styles.noData}>No Data Found</Text>
@@ -314,9 +296,15 @@ const styles = StyleSheet.create({
     paddingTop: 2,
     backgroundColor: globalColors.white,
   },
-  head: {height: 40, backgroundColor: "#c2d6d6"},
+  head: {height: 40, backgroundColor: globalColors.card, marginHorizontal: 0},
   text: {marginHorizontal: 4, marginVertical: 11},
-  row: {flexDirection: 'row'},
+  headText: {
+    marginHorizontal: 4,
+    marginVertical: 11,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  row: {flexDirection: 'row', marginHorizontal: 5, width: '100%'},
   btn: {
     marginLeft: 8,
   },

@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Linking,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {DATA} from '../../AdminScreens/Dashboard/dash';
@@ -21,7 +22,11 @@ import {useSelector} from 'react-redux';
 import reactotron from 'reactotron-react-native';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import Rupees from 'react-native-vector-icons/MaterialIcons';
+import SocialIcon from 'react-native-vector-icons/Entypo';
+// import Calender from 'react-native-vector-icons/FontAwesome5'
+import Calender from 'react-native-vector-icons/FontAwesome';
+import {fb} from '../../../utils/constan';
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 90;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.74);
@@ -34,7 +39,7 @@ const DashboardAdmin = props => {
 
   const getData = async () => {
     const resposone = await axios.get(
-      'https://ibf.instantbusinesslistings.com/api/leads/index',
+      'https://ibf.instantbusinesslistings.com/api/event/index',
       {
         headers: {
           Authorization: `Bearer ${userRes}`,
@@ -69,42 +74,75 @@ const DashboardAdmin = props => {
 
   const isCarousel = React.useRef(null);
   const navigation = useNavigation();
+
+  const EventData = data => {
+    navigation.navigate('Event Details', {eventData: data});
+  };
+
+  const openLink = async url => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        reactotron.log('Cannot open the link:', url);
+      }
+    } catch (error) {
+      reactotron.log('Error opening the link:', error);
+    }
+  };
+
   const CarouselCardItem = ({item, index}) => {
     return (
       <>
-        <View style={styles.itemContainer} key={index}>
-          <View>
-            <Text style={styles.header}>{item.business_title}</Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 10,
-              marginTop: 10,
-            }}>
+        <TouchableOpacity onPress={() => EventData(item)}>
+          <View style={styles.itemContainer} key={index}>
             <View>
-              <Text style={styles.cardText}>Business Category </Text>
-              <Text style={styles.cardText}>Business Title </Text>
+              <Text style={styles.header}>{item.title}</Text>
             </View>
 
-            <View style={{width: '5%'}}>
-              <Text style={styles.cardText}>-</Text>
-              <Text style={styles.cardText}>-</Text>
-            </View>
-            <View style={{width: '50%'}}>
-              <Text style={styles.cardTextR} numberOfLines={2}>
-                {item.business_category_name}
-              </Text>
-              <Text style={styles.cardTextR} numberOfLines={2}>
-                {item.business_title}
-              </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <Image
+                source={require('../../../assets/mainLogo.jpg')} // Replace with your image source
+                style={styles.image}
+              />
+
+              <View style={{padding: 10}}>
+                <View style={{flexDirection: 'row'}}>
+                  <Icons
+                    name="location-pin"
+                    size={20}
+                    color="#fff"
+                    style={{marginTop: 3}}
+                  />
+                  <Text style={styles.cardTextR} numberOfLines={2}>
+                    {item.address}
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row', marginTop: 15}}>
+                  <Calender
+                    name="calendar-o"
+                    size={17}
+                    color="#fff"
+                    style={{marginTop: 3}}
+                  />
+                  <Text
+                    style={[styles.cardTextR, {marginLeft: 5}]}
+                    numberOfLines={2}>
+                    {item.date}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </>
     );
   };
+
   return (
     <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.container}>
@@ -116,9 +154,10 @@ const DashboardAdmin = props => {
               textAlign: 'center',
               color: '#000',
             }}>
-            Recent 3 Leads
+            Events
           </Text>
           <View>
+            {/* <TouchableOpacity onPress={EventData}> */}
             <Carousel
               ref={isCarousel}
               data={asycData}
@@ -130,6 +169,7 @@ const DashboardAdmin = props => {
               loop={true}
               autoplayInterval={4000}
             />
+            {/* </TouchableOpacity> */}
           </View>
         </View>
 
@@ -143,15 +183,15 @@ const DashboardAdmin = props => {
             borderTopRightRadius: 25,
           }}>
           <View style={styles.row}>
-
-          <TouchableOpacity onPress={() => navigation.navigate('Lead list')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Lead list')}>
               <View
                 style={[styles.card1, {backgroundColor: globalColors.card}]}>
-                  <View style={{alignSelf:'center',paddingVertical:10}}>
-                    <Icons name='list' size={40} color='#fff'/>
-                  </View>
-                <View style={[styles.card2, {backgroundColor: globalColors.card2}]}>
-                  <Text style={styles.title}>{'Leads list'}</Text>
+                <View style={{alignSelf: 'center', paddingVertical: 10}}>
+                  <Icons name="list" size={30} color="#fff" />
+                </View>
+                <View
+                  style={[styles.card2, {backgroundColor: globalColors.card2}]}>
+                  <Text style={styles.title}>{'Leads List'}</Text>
                   <View style={styles.insideText}>
                     <Text style={styles.showText}>{leadsLength}</Text>
                   </View>
@@ -159,18 +199,16 @@ const DashboardAdmin = props => {
               </View>
             </TouchableOpacity>
 
-
-           
-
             <TouchableOpacity
               onPress={() => navigation.navigate('Business List')}>
               <View
                 style={[styles.card1, {backgroundColor: globalColors.card}]}>
-                  <View style={{alignSelf:'center',paddingVertical:10}}>
-                    <Ionicons name='document-text-sharp' size={40} color='#fff'/>
-                  </View>
-                <View style={[styles.card2, {backgroundColor: globalColors.card2}]}>
-                  <Text style={styles.title}>{'Business list'}</Text>
+                <View style={{alignSelf: 'center', paddingVertical: 10}}>
+                  <Ionicons name="document-text-sharp" size={30} color="#fff" />
+                </View>
+                <View
+                  style={[styles.card2, {backgroundColor: globalColors.card2}]}>
+                  <Text style={styles.title}>{'Business List'}</Text>
                   <View style={styles.insideText}>
                     <Text style={styles.showText}>{userLength}</Text>
                   </View>
@@ -178,37 +216,43 @@ const DashboardAdmin = props => {
               </View>
             </TouchableOpacity>
 
-
-
+            <View style={[styles.card1, {backgroundColor: globalColors.card}]}>
+              <View style={{alignSelf: 'center', paddingVertical: 10}}>
+                <Icons name="list" size={30} color="#fff" />
+              </View>
               <View
-                style={[styles.card1, {backgroundColor: globalColors.card}]}>
-                  <View style={{alignSelf:'center',paddingVertical:10}}>
-                    <Icons name='list' size={40} color='#fff'/>
-                  </View>
-                <View style={[styles.card2, {backgroundColor: globalColors.card2}]}>
-                  <Text style={[styles.title]}>{'Converted leads'}</Text>
-                  <View style={styles.insideText}>
-                    <Text style={styles.showText}>{userLength}</Text>
-                  </View>
+                style={[styles.card2, {backgroundColor: globalColors.card2}]}>
+                <Text style={[styles.title]}>{'Converted Leads'}</Text>
+                <View style={styles.insideText}>
+                  <Text style={styles.showText}>{userLength}</Text>
                 </View>
               </View>
-      
+            </View>
 
-    
+            <View style={[styles.card1, {backgroundColor: globalColors.card}]}>
+              <View style={{alignSelf: 'center', paddingVertical: 10}}>
+                <Rupees name="business-center" size={30} color="#fff" />
+              </View>
               <View
-                style={[styles.card1, {backgroundColor: globalColors.card}]}>
-                  <View style={{alignSelf:'center',paddingVertical:10}}>
-                    <Icons name='list' size={40} color='#fff'/>
-                  </View>
-                <View style={[styles.card2, {backgroundColor: globalColors.card2}]}>
-                  <Text style={styles.title}>{'Business Revenue'}</Text>
-                  <View style={styles.insideText}>
-                    <Text style={styles.showText}>50000</Text>
-                  </View>
+                style={[styles.card2, {backgroundColor: globalColors.card2}]}>
+                <Text style={styles.title}>{'Business Revenue'}</Text>
+                <View style={styles.insideText}>
+                  <Text style={styles.showText}>50000</Text>
                 </View>
               </View>
-
-     
+            </View>
+          </View>
+          <View style={styles.row}>
+            <TouchableOpacity onPress={() => openLink(fb)}>
+              <View style={[{alignItems: 'center'}]}>
+                <SocialIcon name="facebook" size={30} color="#1773ea" />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={[{alignItems: 'center'}]}>
+                <SocialIcon name="instagram" size={30} color="#d62976" />
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -219,7 +263,7 @@ const styles = StyleSheet.create({
   showText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color:'#000'
+    color: '#000',
   },
   showCards: {
     backgroundColor: '#fff',
@@ -306,7 +350,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     fontWeight: '600',
-    color:'#000'
+    color: '#000',
   },
   insideText: {
     display: 'flex',
@@ -324,6 +368,12 @@ const styles = StyleSheet.create({
     height: RFValue(22),
     width: RFValue(22),
     tintColor: globalColors.primaryTheme,
+  },
+  image: {
+    width: '50%',
+    height: 91, // Set the desired height for the image
+    resizeMode: 'cover',
+    borderBottomLeftRadius: 8,
   },
 });
 

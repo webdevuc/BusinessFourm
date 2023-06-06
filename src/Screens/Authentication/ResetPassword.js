@@ -12,25 +12,59 @@ import {Header} from '../../Components/Common/Header';
 import Toast from 'react-native-simple-toast';
 import {globalColors} from '../../theme/globalColors';
 import Icons from 'react-native-vector-icons/MaterialIcons';
+import reactotron from 'reactotron-react-native';
+import {RNToasty} from 'react-native-toasty';
+import axios from 'axios';
 
 export default function ResetPassword(props) {
+  const mobile_no = props?.route?.params?.mobile_no;
+  const otp = props?.route?.params?.otp;
+  reactotron.log('mobile--', mobile_no);
+  reactotron.log('otp--', otp);
+
   const navigation = useNavigation();
   const [password, setPassword] = useState('');
   const [confirmPassword, setComfirmPassword] = useState('');
-  const resetPassword = () => {
+  const resetPassword = async () => {
     if (password.length < 6) {
-      Toast.show('Password must be of 6 or more characters', Toast.LONG);
+      RNToasty.Error({
+        title: 'Password must be of 6 or more characters',
+        position: 'bottom',
+      });
     } else if (confirmPassword.length < 6) {
-      Toast.show(
-        'Confirm password must be of 6 or more characters',
-        Toast.LONG,
-      );
+      RNToasty.Error({
+        title: 'Confirm password must be of 6 or more characters',
+        position: 'bottom',
+      });
     } else if (confirmPassword != password) {
-      Toast.show('Password & confirm password does not match', Toast.LONG);
+      RNToasty.Error({
+        title: 'Password & confirm password does not match',
+        position: 'bottom',
+      });
     } else {
-      navigation.navigate('Login');
+      const payload = {
+        mobile_no: mobile_no,
+        otp: otp,
+        password: password,
+        password_confirmation: confirmPassword,
+      };
+
+      try {
+        const resopnse = await axios.post(
+          'https://ibf.instantbusinesslistings.com/api/change-password',
+          payload,
+        );
+
+        RNToasty.Success({
+          title: resopnse.data.message,
+          position: 'bottom',
+        });
+        navigation.navigate('Login');
+      } catch (error) {
+        reactotron.error('Error:============', error);
+      }
+      // navigation.navigate('Login');
     }
-    // navigation.navigate('Login');
   };
   return (
     <>

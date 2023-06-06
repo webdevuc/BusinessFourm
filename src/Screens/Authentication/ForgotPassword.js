@@ -22,35 +22,102 @@ import Regex from '../../utils/validation';
 import Toast from 'react-native-simple-toast';
 
 import Icons from 'react-native-vector-icons/MaterialIcons';
+import {RNToasty} from 'react-native-toasty';
+import reactotron from 'reactotron-react-native';
+import axios from 'axios';
+import {useDispatch, useSelector} from 'react-redux';
+import {forgotPassword} from '../../actions/ForgotPassword';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export default function ForgotPassword(props) {
+  const forgotLoading = useSelector(state => state.forgotPassword.loading);
+
+  const dispatch = useDispatch();
+
   const navigation = useNavigation();
-  const [mobile, setMobile] = useState('');
+  const [mobile_no, setMobile] = useState('');
   const [otp, setOtp] = useState('');
   const [isOtp, setIsOpt] = useState(false);
 
   const resendOTP = () => {
-    if (!Regex.validateMobile(mobile)) {
-      Toast.show('Please enter a valid mobile number.', Toast.LONG);
+    if (!Regex.validateMobile(mobile_no)) {
+      RNToasty.Error({
+        title: 'Please enter a valid mobile number.',
+        position: 'bottom',
+      });
       setIsOpt(false);
       return;
     }
     setIsOpt(true);
   };
-  const handleSubmit = () => {
-    if (!Regex.validateMobile(mobile)) {
-      Toast.show('Please enter a valid mobile number.', Toast.LONG);
+  const handleSubmit = async () => {
+    if (!Regex.validateMobile(mobile_no)) {
+      RNToasty.Error({
+        title: 'Please enter a valid mobile number.',
+        position: 'bottom',
+      });
       return;
     }
 
-    setIsOpt(true);
+    dispatch(forgotPassword(mobile_no, setIsOpt));
+
+    // try {
+    //   const response = await axios.post(
+    //     'https://ibf.instantbusinesslistings.com/api/forgot-password',
+    //     {mobile_no},
+    //   );
+    //   if (response.data.message == 'Given Mobile Number was invalid') {
+    //     RNToasty.Error({
+    //       title: response.data.message,
+    //       position: 'bottom',
+    //     });
+    //   } else {
+    //     setIsOpt(true);
+    //     RNToasty.Success({
+    //       title: response.data.message,
+    //       position: 'bottom',
+    //     });
+    //   }
+
+    //   reactotron.log('Response:', response.data.message);
+    // } catch (error) {
+    //   reactotron.error('Error:', error);
+    // }
   };
-  const validateOtp = () => {
+  const validateOtp = async () => {
     if (!Regex.validateOTP(otp)) {
-      Toast.show('Please enter a valid OTP.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a valid OTP',
+        position: 'bottom',
+      });
       return;
     }
-    navigation.navigate('resetpassword');
+    const payload = {
+      mobile_no: mobile_no,
+      otp: otp,
+    };
+
+    try {
+      const res = await axios.post(
+        'https://ibf.instantbusinesslistings.com/api/confirm-otp',
+        payload,
+      );
+      if (res.data.status == 422) {
+        RNToasty.Error({
+          title: 'incorrect OTP',
+          position: 'bottom',
+        });
+      }
+      if (res.data.status == 200) {
+        RNToasty.Success({
+          title: 'OTP Confirmed',
+          position: 'bottom',
+        });
+        navigation.navigate('resetpassword', {mobile_no: mobile_no, otp: otp});
+      }
+    } catch (error) {
+      reactotron.error('Error:', error);
+    }
   };
 
   return (
@@ -67,30 +134,39 @@ export default function ForgotPassword(props) {
           <TextInput
             style={styles.TextInput}
             placeholder="Mobile Number"
-            value={mobile}
+            value={mobile_no}
             placeholderTextColor={globalColors.grey}
             onChangeText={mobile => setMobile(mobile)}
             keyboardType="number-pad"
             maxLength={10}
           />
         </View>
-        <TouchableOpacity style={styles.otp} onPress={resendOTP}>
+        <TouchableOpacity style={styles.otp} onPress={handleSubmit}>
           <Text style={styles.otpText}>Resend OTP?</Text>
         </TouchableOpacity>
-        {isOtp && (
-          <View>
-            <OTPTextInput
-              tintColor={globalColors.primaryTheme}
-              color={globalColors.primaryTheme}
-              handleTextChange={text => setOtp(text)}
-            />
-          </View>
+        {forgotLoading ? (
+          <Spinner visible={forgotLoading} color={globalColors.card} />
+        ) : (
+          isOtp && (
+            <View>
+              <OTPTextInput
+                tintColor={globalColors.primaryTheme}
+                color={globalColors.primaryTheme}
+                handleTextChange={text => setOtp(text)}
+              />
+            </View>
+          )
         )}
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={isOtp ? validateOtp : handleSubmit}>
-          <Text style={styles.submitText}>Submit</Text>
-        </TouchableOpacity>
+
+        {!isOtp ? (
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitText}>Submit</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.submitButton} onPress={validateOtp}>
+            <Text style={styles.submitText}>validate OTP</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </>
   );

@@ -275,7 +275,6 @@
 //     setLeadsLength(resposone.data?.leads.length)
 //   };
 
-
 //   const UserLength = async () =>{
 //     const response = await axios.get(
 //       'https://ibf.instantbusinesslistings.com/api/users',
@@ -313,12 +312,12 @@
 //               paddingHorizontal: 10,
 //               marginTop: 10,
 //             }}>
-        
+
 //               <View>
 //                 <Text style={styles.cardText}>Business Category </Text>
 //                 <Text style={styles.cardText}>Business Title </Text>
 //               </View>
-          
+
 //             <View style={{width: '5%'}}>
 //               <Text style={styles.cardText}>-</Text>
 //               <Text style={styles.cardText}>-</Text>
@@ -375,7 +374,6 @@
 //           }}>
 //           <View style={styles.row}>
 
-
 //           <View style={[styles.showCards,{marginTop:15}]}>
 //               <Text style={styles.showText}>Total Business Revenue</Text>
 //               <Text style={styles.showText}>2000</Text>
@@ -385,7 +383,6 @@
 //               <Text style={styles.showText}>Converted Leads</Text>
 //               <Text style={styles.showText}>22</Text>
 //             </View>
-
 
 //             <TouchableOpacity
 //               onPress={() => navigation.navigate('Business List')}>
@@ -481,8 +478,6 @@
 //                 </View>
 //               </View>
 //             </TouchableOpacity>
-
-            
 
 //           </View>
 //         </View>
@@ -604,14 +599,6 @@
 // });
 
 // export default DashboardAdmin;
-
-
-
-
-
-
-
-
 
 // import React from 'react';
 // import {
@@ -873,8 +860,8 @@ const DashboardAdmin = props => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
 
   const [asycData, setAsycData] = useState([]);
-  const[leadsLength,setLeadsLength] = useState([])
-  const [userLength , serUserLength] = useState([])
+  const [leadsLength, setLeadsLength] = useState([]);
+  const [userLength, serUserLength] = useState([]);
 
   const getData = async () => {
     const resposone = await axios.get(
@@ -887,11 +874,10 @@ const DashboardAdmin = props => {
     );
 
     setAsycData(resposone?.data?.leads);
-    setLeadsLength(resposone.data?.leads.length)
+    setLeadsLength(resposone.data?.leads.length);
   };
 
-
-  const UserLength = async () =>{
+  const UserLength = async () => {
     const response = await axios.get(
       'https://ibf.instantbusinesslistings.com/api/users',
       {
@@ -901,10 +887,10 @@ const DashboardAdmin = props => {
       },
     );
     serUserLength(response.data?.Users?.length);
-  }
+  };
 
   useEffect(() => {
-    UserLength()
+    UserLength();
     getData();
   }, []);
 
@@ -928,12 +914,11 @@ const DashboardAdmin = props => {
               paddingHorizontal: 10,
               marginTop: 10,
             }}>
-        
-              <View>
-                <Text style={styles.cardText}>Business Category </Text>
-                <Text style={styles.cardText}>Business Title </Text>
-              </View>
-          
+            <View>
+              <Text style={styles.cardText}>Business Category </Text>
+              <Text style={styles.cardText}>Business Title </Text>
+            </View>
+
             <View style={{width: '5%'}}>
               <Text style={styles.cardText}>-</Text>
               <Text style={styles.cardText}>-</Text>
@@ -989,9 +974,7 @@ const DashboardAdmin = props => {
             borderTopRightRadius: 25,
           }}>
           <View style={styles.row}>
-
-
-          <View style={[styles.showCards,{marginTop:15}]}>
+            <View style={[styles.showCards, {marginTop: 15}]}>
               <Text style={styles.showText}>Total Business Revenue</Text>
               <Text style={styles.showText}>2000</Text>
             </View>
@@ -1001,15 +984,10 @@ const DashboardAdmin = props => {
               <Text style={styles.showText}>22</Text>
             </View>
 
-
             <TouchableOpacity
               onPress={() => navigation.navigate('Business List')}>
               {/* <TouchableOpacity> */}
-              <View
-                style={[
-                  styles.card1,
-                  {backgroundColor: '#0086b3'},
-                ]}>
+              <View style={[styles.card1, {backgroundColor: '#0086b3'}]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
                   <Text style={styles.title}>{'Business list'}</Text>
                   <View style={styles.insideText}>
@@ -1025,11 +1003,7 @@ const DashboardAdmin = props => {
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => navigation.navigate('Lead list')}>
-              <View
-                style={[
-                  styles.card1,
-                  {backgroundColor: '#0086b3'},
-                ]}>
+              <View style={[styles.card1, {backgroundColor: '#0086b3'}]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
                   <Text style={styles.title}>{'Leads list'}</Text>
                   <View style={styles.insideText}>
@@ -1063,11 +1037,7 @@ const DashboardAdmin = props => {
 
             <TouchableOpacity
               onPress={() => navigation.navigate('Business Report')}>
-              <View
-                style={[
-                  styles.card1,
-                  {backgroundColor: '#0086b3'},
-                ]}>
+              <View style={[styles.card1, {backgroundColor: '#0086b3'}]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
                   <Text style={styles.title}>{'Report'}</Text>
                   <View style={styles.insideText}>
@@ -1080,11 +1050,7 @@ const DashboardAdmin = props => {
 
             <TouchableOpacity
               onPress={() => navigation.navigate('Add Category')}>
-              <View
-                style={[
-                  styles.card1,
-                  {backgroundColor: '#0086b3'},
-                ]}>
+              <View style={[styles.card1, {backgroundColor: '#0086b3'}]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
                   <Text style={styles.title}>{'Add Category'}</Text>
                   <View style={styles.insideText}>
@@ -1098,9 +1064,6 @@ const DashboardAdmin = props => {
                 </View>
               </View>
             </TouchableOpacity>
-
-            
-
           </View>
         </View>
       </View>
@@ -1108,20 +1071,20 @@ const DashboardAdmin = props => {
   );
 };
 const styles = StyleSheet.create({
-  showText:{
-      fontSize:16,
-      fontWeight:'bold',
-      color:globalColors.textGrey
+  showText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: globalColors.textGrey,
   },
-  showCards:{
+  showCards: {
     backgroundColor: '#fff',
     width: '75%',
     height: 50,
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 15,
-    flexDirection:'row',
-    justifyContent:'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   container: {
     paddingTop: 15,
@@ -1158,7 +1121,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   header: {
-    color: "#fff",
+    color: '#fff',
     borderBottomColor: '#fff',
     borderBottomWidth: 1,
     fontSize: 20,
@@ -1253,14 +1216,3 @@ const styles = StyleSheet.create({
 });
 
 export default DashboardAdmin;
-
-
-
-
-
-
-
-
-
-
-

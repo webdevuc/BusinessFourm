@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 import {useState} from 'react';
@@ -20,6 +21,8 @@ import axios from 'axios';
 import AlertModal from '../../../Components/Common/AlertModal';
 import {useDispatch, useSelector} from 'react-redux';
 import {saveToken} from '../../../actions/UserActions';
+import {globalColors} from '../../../theme/globalColors';
+import {RFValue} from 'react-native-responsive-fontsize';
 
 export default function AddCat({navigation}) {
   const dispatch = useDispatch();
@@ -63,7 +66,7 @@ export default function AddCat({navigation}) {
           {
             headers: {
               'Content-type': 'application/json',
-              Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
+              Authorization: `Bearer ${userRes}`,
             },
           },
         );
@@ -73,10 +76,13 @@ export default function AddCat({navigation}) {
         setbusiness_Category('');
         RNToasty.Success({
           title: 'Category saves successfully..',
-          position: 'top',
+          position: 'bottom',
         });
       } else {
-        Alert.alert('Please enter category name');
+        RNToasty.Error({
+          title: 'Please enter category name',
+          position: 'bottom',
+        });
       }
     } catch (e) {
       reactotron.log('Failed to store data:', e);
@@ -121,14 +127,12 @@ export default function AddCat({navigation}) {
   };
 
   const confirm = async () => {
-    const del = await axios.delete(
-      `http://192.168.1.60:3000/addCategory/${deleteId}`,
-    );
+    await axios.delete(`http://192.168.1.60:3000/addCategory/${deleteId}`);
     getData();
     setDeleteModal(false);
-    RNToasty.Warn({
+    RNToasty.Success({
       title: 'Category deleted successfully..',
-      position: 'top',
+      position: 'bottom',
     });
   };
 
@@ -141,11 +145,13 @@ export default function AddCat({navigation}) {
       {asycData?.map((user, i) => (
         <View style={styles.row} key={i}>
           <Text style={styles.cell}>{i + 1}</Text>
-          <Text style={styles.cell}>{user.business_category_name}</Text>
+          <Text numberOfLines={2} style={styles.cell}>
+            {user.business_category_name}
+          </Text>
           <View
             style={[
               styles.cell,
-              {flexDirection: 'row', justifyContent: 'center'},
+              {flexDirection: 'row', justifyContent: 'flex-start', gap: 15},
             ]}>
             <Edit
               onPress={() => {
@@ -157,7 +163,7 @@ export default function AddCat({navigation}) {
               name="edit"
               size={20}
               style={{marginVertical: 7}}
-              color="#008080"
+              color={globalColors.card}
             />
 
             <Delete
@@ -175,33 +181,32 @@ export default function AddCat({navigation}) {
 
   let date = moment().format('MMMM Do YYYY');
   return (
-    <View style={{height: '100%'}}>
+    <View style={{height: '100%', backgroundColor: '#fff'}}>
       <View style={styles.containerd}>
-
         <View style={styles.inputView}>
           <TextInput
             value={business_Category}
             style={styles.TextInput}
             placeholder="Enter business category name"
-            placeholderTextColor="#003f5c"
+            placeholderTextColor={globalColors.grey}
             returnKeyType="done"
-            keyboardType="numeric"
             onChangeText={text => setbusiness_Category(text)}
           />
         </View>
 
-        <View style={styles.buttons}>
-          <Button
-            title={editing ? 'Update Category' : 'Add Category'}
-            onPress={editing ? updateCategory : addCategory}
-          />
-        </View>
+        <TouchableOpacity onPress={editing ? updateCategory : addCategory}>
+          <View style={styles.buttons}>
+            <Text style={{color: globalColors.white, fontSize: RFValue(15)}}>
+              {editing ? 'Update Category' : ' + Add Category'}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.container}>
         <View style={styles.row}>
           <Text style={[styles.cell, styles.header]}>Sr.no</Text>
-          <Text style={[styles.cell, styles.header]}>Business Category</Text>
+          <Text style={[styles.cell, styles.header]}>Category</Text>
           <Text style={[styles.cell, styles.header]}>Action</Text>
         </View>
         {loader && (
@@ -220,7 +225,7 @@ export default function AddCat({navigation}) {
         cancel={() => {
           cancel();
         }}
-        title={'Are you sure you want to delete this address?'}
+        title={'Are you sure you want to category?'}
       />
     </View>
   );
@@ -233,6 +238,7 @@ const styles = StyleSheet.create({
     borderColor: '#fff5e6',
     borderRadius: 4,
     overflow: 'hidden',
+    paddingHorizontal: 5,
   },
   row: {
     flexDirection: 'row',
@@ -244,7 +250,8 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     paddingVertical: 10,
-    textAlign: 'center',
+    // textAlign: 'center',
+    paddingLeft: RFValue(15),
     fontSize: 16,
     alignContent: 'center',
     // color:'#fff'
@@ -254,9 +261,9 @@ const styles = StyleSheet.create({
     // justifyContent:'space-between'
   },
   header: {
-    backgroundColor: '#c2d6d6',
+    backgroundColor: globalColors.card,
     fontWeight: 'bold',
-    height: 60,
+    color: '#fff',
   },
   noData: {
     textAlign: 'center',
@@ -268,14 +275,16 @@ const styles = StyleSheet.create({
   },
 
   inputView: {
+    borderWidth: 1,
+    borderColor: globalColors.grey,
     backgroundColor: '#fff',
     borderRadius: 5,
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     marginVertical: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 15,
+    width: '95%',
   },
 
   buttons: {
@@ -283,10 +292,17 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     flexDirection: 'row',
     justifyContent: 'center',
+    width: '95%',
+    backgroundColor: globalColors.card,
+    alignItems: 'center',
+    marginLeft: RFValue(10),
+    padding: RFValue(10),
+    // flex: 1,
   },
 
   TextInput: {
     flex: 1,
+    padding: RFValue(8),
   },
 
   saveRate: {

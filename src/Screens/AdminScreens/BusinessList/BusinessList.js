@@ -10,6 +10,7 @@ import {
   Image,
   TextInput,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import {UserData} from './UserData';
 import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
@@ -22,6 +23,8 @@ import {useSelector} from 'react-redux';
 import axios from 'axios';
 import reactotron from 'reactotron-react-native';
 import {Pressable} from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
+import EmptyComponent from '../../../Components/Common/EmptyComponent';
 
 const BusinessList = ({navigation}) => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
@@ -30,27 +33,18 @@ const BusinessList = ({navigation}) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState({});
-
+  const [updateList, setUpdateList] = useState(false);
   const [approved, setApproved] = useState(false);
   const [rejected, setRejected] = useState(false);
 
   const [loader, setLoader] = useState(false);
 
+  const isFocused = useIsFocused();
+
   const handleModalVisible = data => {
     setData(data);
     setModalVisible(true);
   };
-
-  const results = UserData?.filter(post => {
-    if (search === '') {
-      return post;
-    } else if (
-      post.BusinessName.toLowerCase().includes(search.toLowerCase()) ||
-      post.BusinessCategory.toLowerCase().includes(search.toLowerCase())
-    ) {
-      return post;
-    }
-  });
 
   const [asycData, setAsycData] = useState([]);
 
@@ -64,19 +58,38 @@ const BusinessList = ({navigation}) => {
         },
       },
     );
-
-    reactotron.log('USER ------------->' + JSON.stringify(resposone.data));
-
     setAsycData(resposone.data.Users);
     setLoader(false);
   };
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (isFocused) {
+      getData();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (updateList) {
+      getData();
+      setUpdateList(false); // Reset the update flag
+    }
+  }, [updateList]);
+
+  const results = asycData?.filter(post => {
+    if (search === '') {
+      return post;
+    } else if (
+      post?.name.toLowerCase()?.includes(search.toLowerCase()) ||
+      post?.business_category_name?.toLowerCase().includes(search.toLowerCase())
+    ) {
+      return post;
+    }
+  });
+
+  reactotron.log('RESULte--', results);
 
   const renderItem = ({item}) => (
-    <View style={[styles.item, {backgroundColor: '#ebeffa'}]}>
+    <View style={[styles.item, {backgroundColor: '#fff'}]}>
       <Pressable onPress={() => handleModalVisible(item)}>
         <View
           style={{
@@ -85,10 +98,8 @@ const BusinessList = ({navigation}) => {
             marginVertical: 10,
           }}>
           <Image
-            source={{
-              uri: 'https://downloader.la/temp/[Downloader.la]-646793a659c14.jpg',
-            }}
-            style={{width: 70, height: 70, borderRadius: 5}}
+            source={require('../../../assets/mainLogo.jpg')}
+            style={{width: 70, height: 70, borderRadius: 10}}
           />
           <View
             style={{
@@ -100,11 +111,15 @@ const BusinessList = ({navigation}) => {
               <Text style={styles.title}>{item.name} </Text>
               <Text>{item.business_category_name}</Text>
             </View>
-            <View>
+            <View style={{position: 'absolute', right: 0}}>
               {item.approval == 1 ? (
-                <Icons name="check" size={20} color="#008080" />
+                <Icons name="check" size={22} color={globalColors.darkGreen} />
               ) : (
-                <Icons name="watch-later" size={20} color="#D98B39" />
+                <Icons
+                  name="watch-later"
+                  size={22}
+                  color={globalColors.yellow}
+                />
               )}
             </View>
           </View>
@@ -113,58 +128,64 @@ const BusinessList = ({navigation}) => {
     </View>
   );
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.searchBarView}>
-        <View style={styles.centerStyles}>
-          <Image source={searchIcon} style={styles.searchIcon} />
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.searchBarView}>
+          <View style={styles.centerStyles}>
+            <Image source={searchIcon} style={styles.searchIcon} />
+          </View>
+          <TextInput
+            returnKeyType="done"
+            maxLength={300}
+            value={search}
+            onChangeText={text => setSearch(text)}
+            placeholder={'Search by Name'}
+            placeholderTextColor={globalColors.grey}
+            style={styles.searchInput}
+          />
+          <TouchableOpacity
+            style={styles.centerStyles}
+            onPress={() => {
+              setSortModal(true);
+            }}>
+            {/* <Image source={sort} style={styles.searchIcon} /> */}
+          </TouchableOpacity>
         </View>
-        <TextInput
-          returnKeyType="done"
-          maxLength={300}
-          value={search}
-          onChangeText={text => setSearch(text)}
-          placeholder={'Search by category/Name'}
-          placeholderTextColor={globalColors.grey}
-          style={styles.searchInput}
-        />
-        <TouchableOpacity
-          style={styles.centerStyles}
-          onPress={() => {
-            setSortModal(true);
-          }}>
-          {/* <Image source={sort} style={styles.searchIcon} /> */}
-        </TouchableOpacity>
-      </View>
 
-      {loader && (
-        <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#008080" />
-        </View>
-      )}
+        {loader ? (
+          <View style={[styles.container, styles.horizontal]}>
+            <ActivityIndicator size="large" color={globalColors.card} />
+          </View>
+        ) : (
+          <FlatList
+            // ListEmptyComponent={() => {
+            //   return (
+            //     <Text style={{textAlign: 'center', marginVertical: 25}}>
+            //       No data Found
+            //     </Text>
+            //   );
+            // }}
+            ListEmptyComponent={() => {
+              return <EmptyComponent title={'  No data Found.'} />;
+            }}
+            contentContainerStyle={styles.listContentContainer}
+            data={[]}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+          />
+        )}
 
-      <FlatList
-        ListEmptyComponent={() => {
-          return (
-            <Text style={{textAlign: 'center', marginVertical: 25}}>
-              {' '}
-              No data Found
-            </Text>
-          );
-        }}
-        contentContainerStyle={styles.listContentContainer}
-        data={asycData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-      />
-      {/* </View> */}
-      {modalVisible && (
-        <ModalView
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          data={data}
-        />
-      )}
-    </SafeAreaView>
+        {/* </View> */}
+        {modalVisible && (
+          <ModalView
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            data={data}
+            setUpdateList={setUpdateList}
+          />
+        )}
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -186,7 +207,6 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     borderWidth: 0,
     marginLeft: RFValue(8),
-    height: RFValue(40),
   },
   centerStyles: {justifyContent: 'center', alignItems: 'center'},
   searchIcon: {
@@ -206,15 +226,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     width: 230,
   },
-  container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
-    backgroundColor: '#fff',
-  },
+  // container: {
+  //   flex: 1,
+  //   paddingTop: StatusBar.currentHeight || 0,
+  //   backgroundColor: '#fff',
+  // },
   item: {
     marginHorizontal: 15,
     marginVertical: 10,
-    elevation: 5,
+    elevation: 4,
     borderRadius: 10,
   },
   userName: {

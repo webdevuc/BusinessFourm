@@ -31,12 +31,12 @@ import reactotron from 'reactotron-react-native';
 import {useSelector} from 'react-redux';
 import ModalLeads from '../../../utils/ModalLeads';
 import AlertModal from '../../../Components/Common/AlertModal';
+import {useIsFocused} from '@react-navigation/native';
 
-
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 const itemWidth = width * 0.9;
 
-const Leads = ({props,navigation}) => {
+const Leads = ({props, navigation}) => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
 
   const userID = useSelector(state => state?.user?.data?.data?.user?.id);
@@ -53,6 +53,8 @@ const Leads = ({props,navigation}) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [asycData, setAsycData] = useState([]);
 
+  const isFocused = useIsFocused();
+
   const getData = async () => {
     setLoader(true);
     const resposone = await axios.get(
@@ -63,24 +65,21 @@ const Leads = ({props,navigation}) => {
         },
       },
     );
-
-    reactotron.log('FOLLOWERS ID-------->', resposone?.data?.leads);
-
     const leadsData = resposone?.data?.leads;
-
     const filteredData = leadsData.filter(lead =>
       lead.followers.includes(userID),
     );
     setFollowers(filteredData);
-    reactotron.log('FILRRRRRRR---------->>>>>', filteredData);
-
     setAsycData(resposone?.data?.leads);
     setLoader(false);
   };
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (isFocused) {
+      reactotron.log('API CALLED--------------->', isFocused);
+      getData();
+    }
+  }, [isFocused]);
 
   const handleModalVisible = data => {
     setData(data);
@@ -104,13 +103,15 @@ const Leads = ({props,navigation}) => {
   };
 
   const confirm = async () => {
-    
-    const del = await axios.delete(
+    const del = await axios.post(
       `https://ibf.instantbusinesslistings.com/api/leads/${deleteId}/delete`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${userRes}`,
+        },
+      },
     );
-
-
-    reactotron.log("DELLELLELELELELE----------->",del)
 
     getData();
     setDeleteModal(false);
@@ -124,110 +125,67 @@ const Leads = ({props,navigation}) => {
     setDeleteModal(false);
   };
 
+  const handleEditLeads = data => {
+    navigation.navigate('Add Leads', {leadsData: data});
+  };
+
+  const handleDetailsLeads = data => {
+    navigation.navigate('Leads Details', {leadsData: data});
+  };
+
   const renderItem = ({item}) => (
-    // <View>
-    //   <Pressable onPress={() => handleModalVisible(item)}>
-    //     <View style={[styles.item, {backgroundColor: '#e0ebeb'}]}>
-    //       <View
-    //         style={{
-    //           marginHorizontal: 10,
-    //           marginVertical: 15,
-    //         }}>
-    //         <View style={{flexDirection: 'row',justifyContent:'space-between'}}>
-    //           <View>
-    //             <Text>Business title </Text>
-
-    //             <Text style={{
-    //                 fontSize: 16,
-    //                 fontWeight: 'bold',
-    //                 textTransform: 'capitalize',
-    //                 width:220
-    //               }}>  {item.business_title}</Text>
-    //           </View>
-
-    //           {/* <View>
-    //             <Text>- </Text>
-    //             <Text>- </Text>
-    //           </View> */}
-
-    //           <View>
-    //             <Text
-    //               style={{
-    //                 // fontSize: 16,
-    //                 // fontWeight: 'bold',
-    //                 // textTransform: 'capitalize',
-    //               }}>
-    //               Category
-    //             </Text>
-    //             <Text
-    //               style={{
-    //                 fontSize: 16,
-    //                 fontWeight: 'bold',
-    //                 textTransform: 'capitalize',
-    //               }}>
-    //               {item.business_category_name}
-    //             </Text>
-    //           </View>
-    //             <Icons name="add" size={30} color='#fff'/>
-    //         </View>
-    //         {followers.map(ele =>
-    //           ele.id === item.id ? (
-    //             <View style={styles.followingCss}>
-    //               <Text style={{color: '#fff', fontSize: 12}}>Following</Text>
-    //             </View>
-    //           ) : (
-    //             ''
-    //           ),
-    //         )}
-    //       </View>
-              
-    //     </View>
-    //   </Pressable>
-    // </View>
-
-
-
-
-
-
     <View style={styles.container}>
-    <Pressable onPress={() => handleModalVisible(item)}>
-      <View style={[styles.item, { backgroundColor: '#ebeffa',elevation:5 }]}>
-        <View style={styles.contentContainer}>
-          <View style={styles.rowContainer}>
-            <View style={styles.businessTitleContainer}>
-              <Text style={styles.label}>business title</Text>
-              <Text style={styles.businessTitle}>{item.business_title}</Text>
-            </View>
-
-            <View style={styles.categoryContainer}>
-              <Text style={styles.label}>category</Text>
-              <Text style={styles.category}>{item.business_category_name}</Text>
-            </View>
-
-            <View style={styles.addButtonContainer}>
-              <Icons name="edit" size={20} color="#264596" onPress={() => navigation.navigate('Add Leads')}/>
-              <Icons name="delete" size={20} color="#871216"   onPress={() => deleteUser(user.id)} style={{marginTop:10}}/>
-            </View>
-          </View>
-
-          {followers.map((ele) =>
-            ele.id === item.id ? (
-              <View style={styles.followingContainer}>
-                <Text style={styles.followingText}>Following</Text>
+      <Pressable onPress={() => handleDetailsLeads(item)}>
+        <View style={[styles.item, {backgroundColor: '#ebeffa', elevation: 2}]}>
+          <View style={styles.contentContainer}>
+            <View style={styles.rowContainer}>
+              <View style={styles.businessTitleContainer}>
+                <Text style={styles.label}>Business title</Text>
+                <Text style={styles.businessTitle}>{item.business_title}</Text>
               </View>
-            ) : null
-          )}
+
+              <View style={styles.categoryContainer}>
+                <Text style={styles.label}>Category</Text>
+                <Text style={styles.category}>
+                  {item.business_category_name}
+                </Text>
+              </View>
+
+              {item.added_by == userID ? (
+                <View style={styles.addButtonContainer}>
+                  <Icons
+                    name="edit"
+                    size={20}
+                    color="#264596"
+                    onPress={() => handleEditLeads(item)}
+                  />
+                  <Icons
+                    name="delete"
+                    size={20}
+                    color="#ff3300"
+                    onPress={() => deleteUser(item.id)}
+                    style={{marginTop: 10}}
+                  />
+                </View>
+              ) : (
+                ''
+              )}
+            </View>
+
+            {followers.map(ele =>
+              ele.id === item.id ? (
+                <View style={styles.followingContainer}>
+                  <Text style={styles.followingText}>Following</Text>
+                </View>
+              ) : null,
+            )}
+          </View>
         </View>
-      </View>
-    </Pressable>
-  </View>
-
-
-
+      </Pressable>
+    </View>
   );
   return (
-    <View style={[styles.container,{backgroundColor:'#fff'}]}>
+    <View style={[styles.container, {backgroundColor: '#fff'}]}>
       <View style={{flexDirection: 'row'}}>
         <View style={styles.searchBarView}>
           <View style={styles.centerStyles}>
@@ -239,8 +197,8 @@ const Leads = ({props,navigation}) => {
             maxLength={250}
             value={search}
             onChangeText={text => setSearch(text)}
-            placeholder={'Search by category/Name'}
-            placeholderTextColor={globalColors.grey}
+            placeholder={'Search by Category/Name'}
+            // placeholderTextColor={globalColors.grey}
             style={styles.searchInput}
           />
           <TouchableOpacity
@@ -256,18 +214,19 @@ const Leads = ({props,navigation}) => {
           style={{
             marginVertical: 15,
             backgroundColor: '#264596',
-            alignItems:'center',
+            alignItems: 'center',
             borderRadius: 50,
+            padding: 6,
           }}>
-            <Pressable onPress={() => navigation.navigate('Add Leads')} style={{marginTop:2}}>
-              <Icons name="add" size={30} color='#fff'/>
+          <Pressable onPress={() => navigation.navigate('Add Leads')}>
+            <Icons name="add" size={22} color="#fff" />
           </Pressable>
         </View>
       </View>
 
       {loader && (
         <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#008080" />
+          <ActivityIndicator size="large" color={globalColors.card} />
         </View>
       )}
 
@@ -276,7 +235,6 @@ const Leads = ({props,navigation}) => {
         ListEmptyComponent={() => {
           return (
             <Text style={{textAlign: 'center', marginVertical: 25}}>
-              {' '}
               No data Found
             </Text>
           );
@@ -306,7 +264,6 @@ const Leads = ({props,navigation}) => {
         }}
       />
 
-
       <AlertModal
         visibility={deleteModal}
         confirm={() => {
@@ -317,7 +274,6 @@ const Leads = ({props,navigation}) => {
         }}
         title={'Are you sure you want to delete this address?'}
       />
-
     </View>
   );
 };
@@ -376,9 +332,9 @@ const styles = StyleSheet.create({
   //   paddingVertical: 5,
   // },
 
-
   container: {
-    marginBottom: 10,
+    flex: 1,
+    paddingVertical: 10,
     alignItems: 'center',
   },
   item: {
@@ -392,14 +348,14 @@ const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    elevation:10
+    elevation: 10,
   },
   businessTitleContainer: {
     flex: 1,
   },
   label: {
     fontSize: 14,
-    color:'#000'
+    color: '#000',
     // fontWeight: 'bold',
     // textTransform: 'capitalize',
   },
@@ -407,44 +363,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textTransform: 'capitalize',
-    color:'#000',
-    paddingVertical:10
+    color: '#000',
+    paddingVertical: 10,
     // width: 220,
   },
   categoryContainer: {
     flex: 1,
-    
+
     // alignItems: 'flex-end',
   },
   category: {
     fontSize: 16,
     fontWeight: 'bold',
     textTransform: 'capitalize',
-    color:'#000',
-    paddingVertical:10
+    color: '#000',
+    paddingVertical: 10,
   },
   addButtonContainer: {
     marginLeft: 10,
   },
   followingContainer: {
-    // ...StyleSheet.absoluteFillObject,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 10,
-    backgroundColor:'#008080',
-    width:80,
-    alignSelf:'center',
-    paddingHorizontal:5,
-    paddingVertical:2
-    
+    backgroundColor: globalColors.card,
+    width: 80,
+    alignSelf: 'flex-end',
+    paddingHorizontal: 5,
+    paddingVertical: 3,
   },
   followingText: {
     color: '#fff',
-    fontSize: 12,
-    textAlign:'center'
+    fontSize: 11,
+    textAlign: 'center',
   },
-
-
-
 });

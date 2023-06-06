@@ -8,7 +8,7 @@ let Regex = {
   },
 
   validateMobile: function (text) {
-    return /^.{10,}$/.test(text);
+    return /^[0-9]{10}$/.test(text);
   },
 
   validateOTP: function (text) {

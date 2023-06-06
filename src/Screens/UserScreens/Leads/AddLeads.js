@@ -20,8 +20,12 @@ import {useSelector} from 'react-redux';
 import reactotron from 'reactotron-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import {RNToasty} from 'react-native-toasty';
 
-const AddLeads = props => {
+const AddLeads = ({props, route}) => {
+  const data = route.params?.leadsData;
+  const dataId = route.params?.leadsData?.id;
+
   const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [mobile, setMobile] = useState('');
@@ -61,8 +65,6 @@ const AddLeads = props => {
 
   const userRes = useSelector(state => state?.user?.data?.data?.token);
 
-  reactotron.log('TOKEN-------->', userRes);
-
   const [asycData, setAsycData] = useState([]);
 
   const getData = async () => {
@@ -70,20 +72,24 @@ const AddLeads = props => {
       'https://ibf.instantbusinesslistings.com/api/business-category-registration',
     );
 
-    reactotron.log(
-      'RESPONSE->' + JSON.stringify(response.data?.business_category),
-    );
-
     const data = response.data.business_category.map(item => ({
       label: item.business_category_name,
       value: item.id,
     }));
-    reactotron.log('DAATATATAT------>' + JSON.stringify(data));
     setAsycData(data);
   };
 
   useEffect(() => {
     getData();
+    if (data) {
+      setTitle(data.business_title);
+      setDescription(data.description);
+      setMobile(data.mobile_no);
+      setExpectedDate(data.expected_date);
+      setCategory(data.business_category);
+      setEstimate(data.estimate);
+      setAddress(data.address);
+    }
   }, []);
 
   const handleChangeTitle = text => {
@@ -140,17 +146,17 @@ const AddLeads = props => {
     }
   };
 
-  const addLeadsApi = async () => {
-    const payload = {
-      business_title: title,
-      description:description,
-      address: address,
-      mobile_no: mobile,
-      business_category: category,
-      estimate: estimate,
-      expected_date: expectedDate,
-    };
+  const payload = {
+    business_title: title,
+    description: description,
+    address: address,
+    mobile_no: mobile,
+    business_category: category,
+    estimate: estimate,
+    expected_date: expectedDate,
+  };
 
+  const addLeadsApi = async () => {
     const data = await axios.post(
       'https://ibf.instantbusinesslistings.com/api/leads/store',
       payload,
@@ -161,7 +167,10 @@ const AddLeads = props => {
         },
       },
     );
-    reactotron.log('ADD --- SAVE' + data);
+    RNToasty.Success({
+      title: 'Leads updated successfully..',
+      position: 'top',
+    });
     navigateToOtherPage();
   };
 
@@ -177,17 +186,49 @@ const AddLeads = props => {
       setCategory('');
       setEstimate('');
       setAddress('');
+      setDescription('');
 
       addLeadsApi();
-
-      Toast.show('Leads added successfully', Toast.LONG);
 
       // setTimeout(()=>{
       //   navigation.navigate('Lead list');
       // },1000)
     } else {
-      Toast.show('All Fields are required', Toast.LONG);
+      RNToasty.Error({
+        title: 'All Fields are required.',
+        position: 'bottom',
+      });
     }
+  };
+
+  const updateLeads = async () => {
+    const data = {
+      business_title: title,
+      address: address,
+      mobile_no: mobile,
+      business_category: category,
+      estimate: estimate,
+      expected_date: expectedDate,
+      description: description,
+    };
+
+    await axios.post(
+      `https://ibf.instantbusinesslistings.com/api/leads/${dataId}/update`,
+      data,
+      {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
+        },
+      },
+    );
+    RNToasty.Success({
+      title: 'leads updated successfully..',
+      position: 'bottoms',
+    });
+    navigateToOtherPage();
+    reactotron.log('UPDATE LEDAS----->', updateData);
+    // addLeadsApi();
   };
 
   return (
@@ -200,7 +241,7 @@ const AddLeads = props => {
           <View style={[styles.inputView, {marginTop: 18}]}>
             <TextInput
               style={[styles.TextInput, errorTitle && styles.redTextInput]}
-              placeholder="Name of business title"
+              placeholder="Name of Business title"
               value={title}
               placeholderTextColor={globalColors.grey}
               // onChangeText={text => setTitle(text)}
@@ -271,7 +312,9 @@ const AddLeads = props => {
               maxHeight={300}
               labelField="label"
               valueField="value"
-              placeholder="Business category"
+              placeholder={
+                data ? data.business_category_name : 'Select Business category'
+              }
               searchPlaceholder="Search..."
               value={category}
               onChange={item => {
@@ -298,15 +341,6 @@ const AddLeads = props => {
           </View>
 
           <View style={styles.inputView}>
-            {/* <TextInput
-              style={[styles.TextInput, errorExpectedDate && styles.redTextInput]}
-              placeholder="Expected date"
-              value={expectedDate}
-              placeholderTextColor={globalColors.grey}
-              // onChangeText={name => setBusinessName(name)}
-              onChangeText={onChangeExpectedDAte}
-            /> */}
-
             <TouchableOpacity onPress={showDateTimePicker}>
               <TextInput
                 // style={styles.input}
@@ -337,9 +371,19 @@ const AddLeads = props => {
             </Text>
           </View>
 
-          <TouchableOpacity onPress={createLead} style={styles.registerButton}>
-            <Text style={styles.registerText}>Create Lead</Text>
-          </TouchableOpacity>
+          {data ? (
+            <TouchableOpacity
+              onPress={updateLeads}
+              style={styles.registerButton}>
+              <Text style={styles.registerText}>Update Lead</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={createLead}
+              style={styles.registerButton}>
+              <Text style={styles.registerText}>Create Lead</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </>
@@ -392,7 +436,7 @@ const styles = StyleSheet.create({
     borderColor: 'red',
   },
   registerButton: {
-    width: '80%',
+    width: '90%',
     borderRadius: 25,
     height: 50,
     alignItems: 'center',

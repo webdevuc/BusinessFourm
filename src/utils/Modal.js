@@ -6,42 +6,41 @@ import {
   Pressable,
   TouchableOpacity,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Close from 'react-native-vector-icons/MaterialIcons';
 import {globalColors} from '../theme/globalColors';
 import reactotron from 'reactotron-react-native';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import axios from 'axios';
-const ModalView = ({setModalVisible, modalVisible, data}) => {
-
+import {RNToasty} from 'react-native-toasty';
+const ModalView = ({setModalVisible, modalVisible, data, setUpdateList}) => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
 
-  reactotron.log("Business TOKEN--------->",(userRes))
+  reactotron.log('Business TOKEN--------->', userRes);
 
   // reactotron.log("business MODAL DAta---------->"+data.id)
 
+  const handleApproveApi = async () => {
+    setModalVisible(true);
 
-  const handleApproveApi = async () =>{
-    setModalVisible(!modalVisible)
-   
     const dataRes = await axios.post(
       `https://ibf.instantbusinesslistings.com/api/approv-user/${data.id}`,
       {},
       {
-        headers: 
-        {
+        headers: {
           'Content-type': 'application/json',
-          'Authorization': `Bearer ${userRes}`, // notice the Bearer before your token
+          Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
         },
-      }
+      },
     );
-
-    
-
-  }
-
- 
+    RNToasty.Success({
+      title: dataRes?.data?.message,
+      position: 'bottom',
+    });
+    setModalVisible(false);
+    setUpdateList(true);
+  };
 
   return (
     <View style={styles.centeredView}>
@@ -57,7 +56,7 @@ const ModalView = ({setModalVisible, modalVisible, data}) => {
             <TouchableOpacity onPress={() => setModalVisible(false)}>
               <Close name="close" size={25} style={styles.closeIcon} />
             </TouchableOpacity>
-            <View style={{flexDirection: 'row'}}>
+            <View style={styles.modalContainer}>
               <View style={{width: '45%'}}>
                 <Text style={styles.title}>Name </Text>
                 <Text style={styles.title}>Mobile Number </Text>
@@ -65,51 +64,53 @@ const ModalView = ({setModalVisible, modalVisible, data}) => {
                 <Text style={styles.title}>Business Name </Text>
                 <Text style={styles.title}>Address</Text>
               </View>
-             
+
               <View style={{width: '50%'}}>
                 <Text style={styles.title} numberOfLines={1}>
                   {' '}
-                  {data.name ? data.name : "N/A"}
+                  {data.name ? data.name : 'N/A'}
                 </Text>
                 <Text style={styles.title} numberOfLines={1}>
                   {' '}
-                  {data.mobile_no ? data.mobile_no : "N/A"}
+                  {data.mobile_no ? data.mobile_no : 'N/A'}
                 </Text>
                 <Text style={styles.title} numberOfLines={1}>
                   {' '}
-                  {data.business_category_name? data.business_category_name:"N/A"}
+                  {data.business_category_name
+                    ? data.business_category_name
+                    : 'N/A'}
                 </Text>
                 <Text style={styles.title} numberOfLines={1}>
                   {' '}
-                  {data.name_of_business?data.name_of_business:"N/A"}
+                  {data.name_of_business ? data.name_of_business : 'N/A'}
                 </Text>
                 <Text style={styles.title} numberOfLines={1}>
                   {' '}
-                  {data.address?data.address:'N/A'}
+                  {data.address ? data.address : 'N/A'}
                 </Text>
               </View>
             </View>
             <View
               style={{
                 flexDirection: 'row',
-                gap: 20,
-                justifyContent: 'flex-end',
+                gap: 10,
                 marginTop: RFValue(30),
+                width: '90%',
               }}>
               {/* {data.approved === false && data.rejected === false && (
                 <> */}
-                  <TouchableOpacity
-                    onPress={() => setModalVisible(!modalVisible)}
-                    style={[styles.button, {backgroundColor: '#ff6666'}]}>
-                    <Text style={styles.buttonText}>Cancel</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    // onPress={() => setModalVisible(!modalVisible)}
-                    onPress={handleApproveApi}
-                    style={[styles.button, {backgroundColor: '#006600'}]}>
-                    <Text style={styles.buttonText}>Approve</Text>
-                  </TouchableOpacity>
-                {/* </>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={[styles.button, {backgroundColor: globalColors.grey}]}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                // onPress={() => setModalVisible(!modalVisible)}
+                onPress={handleApproveApi}
+                style={[styles.button, {backgroundColor: globalColors.card}]}>
+                <Text style={styles.buttonText}>Approve</Text>
+              </TouchableOpacity>
+              {/* </>
               )} */}
             </View>
           </View>
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#0009',
+    // lineHeight: 10,
   },
   modalView: {
     margin: 15,
@@ -142,13 +144,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalContainer: {
+    flexDirection: 'row',
+    paddingVertical: RFValue(20),
+  },
   button: {
-    elevation: 10,
     borderRadius: 5,
-    width: '30%',
+    width: '50%',
     padding: 10,
     backgroundColor: '#006666',
-    justifyContent: 'center',
   },
   buttonText: {
     fontSize: 14,
@@ -163,7 +167,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    // lineHeight: 25,
+    lineHeight: RFValue(28),
     fontWeight: '400',
+    color: globalColors.black,
   },
 });

@@ -14,8 +14,6 @@ import reactotron from 'reactotron-react-native';
 import {useSelector} from 'react-redux';
 import axios from 'axios';
 const ModalLeads = ({setModalVisible, modalVisible, data}) => {
-  reactotron.log('DATATA FFFFFF----------->', data.followers);
-
   const TOKEN = useSelector(state => state?.user?.data?.data?.token);
 
   const userRes = useSelector(state => state?.user?.data?.data?.user?.id);
@@ -57,6 +55,7 @@ const ModalLeads = ({setModalVisible, modalVisible, data}) => {
                 <Text style={styles.title}>Business Category </Text>
                 <Text style={styles.title}>Estimate</Text>
                 <Text style={styles.title}>Expected Date</Text>
+                <Text style={styles.title}>Description</Text>
               </View>
               <View>
                 <Text>-</Text>
@@ -76,6 +75,7 @@ const ModalLeads = ({setModalVisible, modalVisible, data}) => {
                   {' '}
                   {data.expected_date}
                 </Text>
+                <Text style={styles.title}> {data.description}</Text>
               </View>
             </View>
             <View
@@ -86,12 +86,12 @@ const ModalLeads = ({setModalVisible, modalVisible, data}) => {
                 marginTop: RFValue(30),
               }}>
               {data.followers ? (
-                 <TouchableOpacity
-                 // onPress={() => setModalVisible(!modalVisible)}
-                //  onPress={handleFollowing}
-                 style={[styles.button, {backgroundColor: '#008080'}]}>
-                 <Text style={styles.buttonText}>Convert</Text>
-               </TouchableOpacity>
+                <TouchableOpacity
+                  // onPress={() => setModalVisible(!modalVisible)}
+                  //  onPress={handleFollowing}
+                  style={[styles.button, {backgroundColor: '#008080'}]}>
+                  <Text style={styles.buttonText}>Convert</Text>
+                </TouchableOpacity>
               ) : (
                 <TouchableOpacity
                   onPress={handleFollowing}

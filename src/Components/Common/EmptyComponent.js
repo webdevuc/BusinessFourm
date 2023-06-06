@@ -18,7 +18,7 @@ const EmptyComponent = ({title}) => {
           fontSize: RFValue(16),
           // fontFamily: globalFonts.semibold,
           textAlign: 'center',
-          color: globalColors.primaryTheme,
+          color: globalColors.card,
           paddingTop: RFPercentage(2),
         }}>
         {title}

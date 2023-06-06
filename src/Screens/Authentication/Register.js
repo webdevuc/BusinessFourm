@@ -16,300 +16,337 @@ import {
 import {Dropdown} from 'react-native-element-dropdown';
 import {globalColors} from '../../theme/globalColors';
 import {Header} from '../../Components/Common/Header';
-import { useDispatch } from 'react-redux';
-import { registerUser } from '../../actions/UserActions';
+import {useDispatch, useSelector} from 'react-redux';
+import {registerUser} from '../../actions/UserActions';
 import Toast from 'react-native-simple-toast';
-import { isEmpty } from '../../utils/isEmpty';
+import {isEmpty} from '../../utils/isEmpty';
 import Regex from '../../utils/validation';
 import reactotron from 'reactotron-react-native';
 import axios from 'axios';
-import { RNToasty } from 'react-native-toasty';
+import {RNToasty} from 'react-native-toasty';
+// import Geocoder from 'react-native-geocoding';
 
-
-
+// Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
 
 export default function Register(props) {
-
-
-
-  
-
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [gst, setGst] = useState('');
-  const [city, setCity] = useState('');
-  const [address, setAddress] = useState('');
+  const [name, setName] = useState('dasd');
+  const [email, setEmail] = useState('email123@gmail.com');
+  const [mobile, setMobile] = useState('9895856256');
+  const [password, setPassword] = useState('12345678');
+  const [confirmPassword, setConfirmPassword] = useState('12345678');
+  const [businessName, setBusinessName] = useState('fsdf fsdf');
+  const [gst, setGst] = useState('dfgsd fsdfsd');
+  const [city, setCity] = useState('fdsf fsfsdf');
+  const [address, setAddress] = useState('sfdsdf sfsdfsdf');
   const [category, setCategory] = useState(null);
+  const [categoryID, setCategoryId] = useState(null);
+
+  const [isErrorEmail, setIsErrorEmail] = useState(false);
+
+  const [isError, setIsError] = useState(false);
+  const [isErrorM, setIsErrorM] = useState(false);
+  const [isErrorB, setIsErrorB] = useState(false);
+  const [isErrorBC, setIsErrorBC] = useState(false);
+  const [isErrorGst, setIsErrorGst] = useState(false);
+  const [isErrorC, setIsErrorC] = useState(false);
+  const [isErrorA, setIsErrorA] = useState(false);
+  const [isErrorP, setIsErrorP] = useState(false);
+  const [isErrorCP, setIsErrorCP] = useState(false);
+  const [bussinessLong, setBussinessLong] = useState('');
+  const [bussinessLat, setBussinessLat] = useState('');
+
+  // reactotron.log('LAT----', bussinessLat);
+  // reactotron.log('LONG----', bussinessLong);
 
   const [errorMessage, setErrorMessage] = useState('');
-
-
 
   const [asycData, setAsycData] = useState([]);
 
   const getData = async () => {
-    const response = await axios.get('https://ibf.instantbusinesslistings.com/api/business-category-registration');
-  
+    const response = await axios.get(
+      'https://ibf.instantbusinesslistings.com/api/business-category-registration',
+    );
 
-    reactotron.log("RESPONSE->"+JSON.stringify(response.data?.business_category))
+    reactotron.log(
+      'RESPONSE->',
+      JSON.stringify(response.data?.business_category),
+    );
 
-    const data = response.data.business_category.map((item) => ({
+    const data = response.data.business_category.map(item => ({
       label: item.business_category_name,
       value: item.id,
-
-    }))
-  reactotron.log("DAATATATAT------>"+ JSON.stringify(data))
+    }));
+    reactotron.log('DAATATATAT IDDDDD------>' + JSON.stringify(data));
     setAsycData(data);
   };
-
-
 
   useEffect(() => {
     getData();
   }, []);
 
+  const handleRegister = async () => {
+    if (isEmpty(name)) {
+      // Toast.show('Please enter a Name.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a Name',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
 
+    if (!Regex.validateEmail(email)) {
+      // Toast.show('Please enter a valid email.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a valid email.',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
 
-const handleRegister = () => {
+    if (!Regex.validateMobile(mobile)) {
+      // Toast.show('Please enter a valid mobile number.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a valid mobile number.',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
 
+    if (isEmpty(businessName)) {
+      // Toast.show('Please enter a name of business.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a name of business.',
+        position: 'bottom',
+        duration: 1,
+      });
 
+      return;
+    }
 
+    if (isEmpty(category)) {
+      // Toast.show('Select Business category.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Select Business category.',
+        position: 'bottom',
+        duration: 1,
+      });
 
-  if (isEmpty(name)) {
-    // Toast.show('Please enter a Name.', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter a Name",
-      position: 'bottom',
-      duration:1
-    });
-    return;
-  }
+      return;
+    }
 
-  if (!Regex.validateEmail(email)) {
-    // Toast.show('Please enter a valid email.', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter a valid email.",
-      position: 'bottom',
-      duration:1
-    });
-    return;
-  }
+    if (isEmpty(city)) {
+      // Toast.show('Please enter a city.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a city.',
+        position: 'bottom',
+        duration: 1,
+      });
 
-  if (!Regex.validateMobile(mobile)) {
-    // Toast.show('Please enter a valid mobile number.', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter a valid mobile number.",
-      position: 'bottom',
-      duration:1
-    });
-    return;
-  }
+      return;
+    }
 
-  if (isEmpty(businessName)) {
-    // Toast.show('Please enter a name of business.', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter a name of business.",
-      position: 'bottom',
-      duration:1
-    });
+    if (isEmpty(address)) {
+      // Toast.show('Please enter a address.', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter a address.',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
 
-    return;
-  }
+    if (isEmpty(password)) {
+      // Toast.show('Please enter password .', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please enter password .',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
 
-  if (isEmpty(category)) {
-    // Toast.show('Select Business category.', Toast.LONG);
-    RNToasty.Error({
-      title: "Select Business category.",
-      position: 'bottom',
-      duration:1
-    });
-  
-    return;
-  }
+    if (password !== confirmPassword) {
+      // Toast.show('Passwords do not match .', Toast.LONG);
 
-  if (isEmpty(city)) {
-    // Toast.show('Please enter a city.', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter a city.",
-      position: 'bottom',
-      duration:1
-    });
-  
-    return;
-  }
+      RNToasty.Error({
+        title: 'Passwords do not match .',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
+    const payload = {
+      name: name,
+      email: email,
+      password: password,
+      password_confirmation: confirmPassword,
+      mobile_no: mobile,
+      name_of_business: businessName,
+      business_category: categoryID,
+      city: city,
+      address: address,
+      gst: gst,
+      location: `{lat: ${bussinessLat}, long: ${bussinessLong}}`,
+    };
 
-  if (isEmpty(address)) {
-    // Toast.show('Please enter a address.', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter a address.",
-      position: 'bottom',
-      duration:1
-    });
-    return;
-  }
+    // reactotron.log('Payload---', payload);
+    dispatch(registerUser(payload, navigation));
 
+    // try {
+    //   await axios.post(
+    //     'https://ibf.instantbusinesslistings.com/public/api/register',
+    //     payload,
+    //   );
 
-  if (isEmpty(password)) {
-    // Toast.show('Please enter password .', Toast.LONG);
-    RNToasty.Error({
-      title: "Please enter password .",
-      position: 'bottom',
-      duration:1
-    });
-    return
-  }
+    //   // Handle successful response here
+    // } catch (error) {
+    //   RNToasty.Error({
+    //     title: error.response.data.error,
+    //     position: 'bottom',
+    //   });
+    //   RNToasty.Error({
+    //     title: error.response.data.errors.email[0],
+    //     position: 'bottom',
+    //   });
+    //   RNToasty.Error({
+    //     title: error.response.data.errors.mobile_no[0],
+    //     position: 'bottom',
+    //   });
+    //   reactotron.log('ressss--11111', error.response.data.errors);
+    // }
 
-  if (password !== confirmPassword) {
-    // Toast.show('Passwords do not match .', Toast.LONG);
+    // if(errorToast?.error_message){
+    //   Toast.show(errorToast.error_message, Toast.LONG);
+    // }
+    // navigation.navigate('Login');
+  };
 
-    RNToasty.Error({
-      title: "Passwords do not match .",
-      position: 'bottom',
-      duration:1
-    });
-    return
-    
-  } 
+  // const handleInputChange = (text) => {
+  //   setName(text);
+  // };
 
-  dispatch(registerUser({
+  const handleInputChange = text => {
+    setName(text);
 
+    // Perform your validation logic here
+    if (text === '') {
+      setIsError(true);
+    } else {
+      setIsError(false);
+    }
+  };
 
-    name:name,
-    email:email,
-    password:password,
-    password_confirmation:confirmPassword,
-    mobile_no:mobile,
-    name_of_business:businessName,
-    business_category:category,
-    city:city,
-    address:address,
-    gst:gst
+  const handleEmail = text => {
+    setEmail(text);
+    if (text === '') {
+      setIsErrorEmail(true);
+    } else {
+      setIsErrorEmail(false);
+    }
+  };
 
-  }))
+  const handleMobileNumber = text => {
+    setMobile(text);
+    if (text === '') {
+      setIsErrorM(true);
+    } else {
+      setIsErrorM(false);
+    }
+  };
 
+  const handleBusiness = text => {
+    setBusinessName(text);
+    if (text === '') {
+      setIsErrorB(true);
+    } else {
+      setIsErrorB(false);
+    }
+  };
 
-  // if(errorToast?.error_message){
-  //   Toast.show(errorToast.error_message, Toast.LONG);
-  // }
-  navigation.navigate("Login")
-}
+  const handleChangeCity = text => {
+    setCity(text);
+    if (text === '') {
+      setIsErrorC(true);
+    } else {
+      setIsErrorC(false);
+    }
+  };
 
-// const handleInputChange = (text) => {
-//   setName(text);
-// };
+  const handleChangeAddress = text => {
+    setAddress(text);
+    if (text === '') {
+      setIsErrorA(true);
+    } else {
+      setIsErrorA(false);
+    }
+  };
 
-const [isErrorEmail, setIsErrorEmail] = useState(false);
+  const handlePassword = text => {
+    setPassword(text);
+    if (text === '') {
+      setIsErrorP(true);
+    } else {
+      setIsErrorP(false);
+    }
+  };
 
-const [isError, setIsError] = useState(false);
-const [isErrorM, setIsErrorM] = useState(false);
-const [isErrorB, setIsErrorB] = useState(false);
-const [isErrorBC, setIsErrorBC] = useState(false);
-const [isErrorGst, setIsErrorGst] = useState(false);
-const [isErrorC, setIsErrorC] = useState(false);
-const [isErrorA, setIsErrorA] = useState(false);
-const [isErrorP, setIsErrorP] = useState(false);
-const [isErrorCP, setIsErrorCP] = useState(false);
+  const handleConfirmPass = text => {
+    setConfirmPassword(text);
+    if (text === '') {
+      setIsErrorCP(true);
+    } else {
+      setIsErrorCP(false);
+    }
+  };
 
-const handleInputChange = (text) => {
-  setName(text);
+  const handleDropdown = item => {
+    setCategory(item.value);
+    setCategoryId(item.value);
+    if (item === '') {
+      setIsErrorBC(true);
+    } else {
+      setIsErrorBC(false);
+    }
+  };
 
-  // Perform your validation logic here
-  if (text === '') {
-    setIsError(true);
-  } else {
-    setIsError(false);
-  }
-};
+  const handleChangeGSTNo = text => {
+    setGst(text);
+    if (text === '') {
+      setIsErrorGst(true);
+    } else {
+      setIsErrorGst(false);
+    }
+  };
+  // useEffect(() => {
+  //   const convertAddressToLatLng = async address => {
+  //     try {
+  //       const response = await Geocoder.from(address);
+  //       const {results} = response;
+  //       if (results.length > 0) {
+  //         const {geometry} = results[0];
+  //         const {lat, lng} = geometry.location;
+  //         setBussinessLat(lat);
+  //         setBussinessLong(lng);
+  //       }
+  //     } catch (error) {
+  //       console.log('Error converting address to latlng:', error);
+  //     }
+  //   };
 
+  //   convertAddressToLatLng(address);
+  // }, [address]);
 
-const handleEmail = (text) =>{
-  setEmail(text)
-  if(text === ''){
-    setIsErrorEmail(true)
-  }else{
-    setIsErrorEmail(false)
-  }
-}
+  // return (
+  //   // Trigger the sendNotification function wherever needed in your app
+  //   // For example, you can trigger it on a button press
+  //   <Button title="Send Notification" onPress={sendNotification} />
+  // );
 
-const handleMobileNumber = (text) =>{
-  setMobile(text)
-  if (text === '') {
-    setIsErrorM(true);
-  } else {
-    setIsErrorM(false);
-  }
-}
-
-const handleBusiness = (text) =>{
-  setBusinessName(text)
-  if (text === '') {
-    setIsErrorB(true);
-  } else {
-    setIsErrorB(false);
-  }
-}
-
-const handleChangeCity = (text) =>{
-  setCity(text)
-  if (text === '') {
-    setIsErrorC(true);
-  } else {
-    setIsErrorC(false);
-  }
-}
-
-const handleChangeAddress = (text) =>{
-  setAddress(text)
-  if (text === '') {
-    setIsErrorA(true);
-  } else {
-    setIsErrorA(false);
-  }
-}
-
-const handlePassword = (text) =>{
-  setPassword(text)
-  if (text === '') {
-    setIsErrorP(true);
-  } else {
-    setIsErrorP(false);
-  }
-}
-
-const handleConfirmPass = (text) =>{
-  setConfirmPassword(text)
-  if (text === '') {
-    setIsErrorCP(true);
-  } else {
-    setIsErrorCP(false);
-  }
-}
-
-const handleDropdown = (item) =>{
-  setCategory(item.value);
-  if (item === '') {
-    setIsErrorBC(true);
-  } else {
-    setIsErrorBC(false);
-  }
-}
-
-const handleChangeGSTNo = (text) =>{
-  setGst(text)
-  if (text === '') {
-    setIsErrorGst(true);
-  } else {
-    setIsErrorGst(false);
-  }
-}
-
- 
   return (
     <>
       <ScrollView style={{backgroundColor: globalColors.white}}>
@@ -328,9 +365,10 @@ const handleChangeGSTNo = (text) =>{
               // onChangeText={name => setName(name)}
               onChangeText={handleInputChange}
             />
-            <Text style={{color:'red'}}>{isError ? <Text>Name is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isError ? <Text>Name is required</Text> : ''}
+            </Text>
           </View>
-
 
           <View style={[styles.inputView]}>
             <TextInput
@@ -344,14 +382,15 @@ const handleChangeGSTNo = (text) =>{
               // onChangeText={name => setName(name)}
               onChangeText={handleEmail}
             />
-            <Text style={{color:'red'}}>{isErrorEmail ? <Text>Email is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorEmail ? <Text>Email is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={styles.inputView}>
             <TextInput
               style={[styles.TextInput, isErrorM && styles.redTextInput]}
               placeholder="Mobile Number"
-              
               value={mobile}
               placeholderTextColor={globalColors.grey}
               // onChangeText={text => setMobile(text)}
@@ -359,7 +398,9 @@ const handleChangeGSTNo = (text) =>{
               maxLength={10}
               keyboardType="number-pad"
             />
-             <Text style={{color:'red'}}>{isErrorM ? <Text>Mobile no is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorM ? <Text>Mobile no is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={styles.inputView}>
@@ -371,11 +412,13 @@ const handleChangeGSTNo = (text) =>{
               // onChangeText={name => setBusinessName(name)}
               onChangeText={handleBusiness}
             />
-             <Text style={{color:'red'}}>{isErrorB ? <Text>Business is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorB ? <Text>Business is required</Text> : ''}
+            </Text>
           </View>
           <View style={styles.inputViewDropdown}>
             <Dropdown
-             style={[styles.dropdown, isErrorBC && styles.redTextInput]}
+              style={[styles.dropdown, isErrorBC && styles.redTextInput]}
               // style={styles.dropdown}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
@@ -395,13 +438,14 @@ const handleChangeGSTNo = (text) =>{
               onChange={handleDropdown}
             />
           </View>
-          
-          <Text style={{color:'red'}}>{isErrorBC ? <Text>required</Text>: ''}</Text>
 
+          <Text style={{color: 'red'}}>
+            {isErrorBC ? <Text>required</Text> : ''}
+          </Text>
 
           <View style={[styles.inputView]}>
             <TextInput
-               style={[styles.TextInput, isErrorGst && styles.redTextInput]}
+              style={[styles.TextInput, isErrorGst && styles.redTextInput]}
               value={gst}
               placeholder="GST number"
               placeholderTextColor={globalColors.grey}
@@ -409,32 +453,36 @@ const handleChangeGSTNo = (text) =>{
               // onChangeText={address => setAddress(address)}
               maxLength={15}
             />
-            <Text style={{color:'red'}}>{isErrorGst ? <Text>GST no. is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorGst ? <Text>GST no. is required</Text> : ''}
+            </Text>
           </View>
 
-
-          <View style={[styles.inputView, ]}>
+          <View style={[styles.inputView]}>
             <TextInput
-               style={[styles.TextInput, isErrorC && styles.redTextInput]}
+              style={[styles.TextInput, isErrorC && styles.redTextInput]}
               value={city}
               placeholder="City"
               placeholderTextColor={globalColors.grey}
               onChangeText={handleChangeCity}
               // onChangeText={city => setCity(city)}
             />
-             <Text style={{color:'red'}}>{isErrorC ? <Text>City is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorC ? <Text>City is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={[styles.inputView]}>
             <TextInput
-               style={[styles.TextInput, isErrorA && styles.redTextInput]}
+              style={[styles.TextInput, isErrorA && styles.redTextInput]}
               value={address}
-              placeholder="Address"
+              placeholder="Business address"
               placeholderTextColor={globalColors.grey}
               onChangeText={handleChangeAddress}
-              // onChangeText={address => setAddress(address)}
             />
-            <Text style={{color:'red'}}>{isErrorA ? <Text>Address is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorA ? <Text>Address is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={[styles.inputView]}>
@@ -447,11 +495,13 @@ const handleChangeGSTNo = (text) =>{
               onChangeText={handlePassword}
               // onChangeText={password => setPassword(password)}
             />
-            <Text style={{color:'red'}}>{isErrorP ? <Text>Password is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorP ? <Text>Password is required</Text> : ''}
+            </Text>
           </View>
           <View style={styles.inputView}>
             <TextInput
-               style={[styles.TextInput, isErrorCP && styles.redTextInput]}
+              style={[styles.TextInput, isErrorCP && styles.redTextInput]}
               value={confirmPassword}
               placeholder="Confirm Password"
               placeholderTextColor={globalColors.grey}
@@ -459,14 +509,18 @@ const handleChangeGSTNo = (text) =>{
               // onChangeText={password => setConfirmPassword(password)}
               onChangeText={handleConfirmPass}
             />
-            <Text style={{color:'red'}}>{isErrorCP ? <Text>Confirm Password is required</Text>: ''}</Text>
+            <Text style={{color: 'red'}}>
+              {isErrorCP ? <Text>Confirm Password is required</Text> : ''}
+            </Text>
           </View>
 
           <Text style={styles.errorMessage}>{errorMessage}</Text>
 
-            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-              <Text style={styles.registerText}>Sign Up</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.registerButton}
+            onPress={handleRegister}>
+            <Text style={styles.registerText}>Sign Up</Text>
+          </TouchableOpacity>
 
           <View
             style={{
@@ -502,7 +556,6 @@ const handleChangeGSTNo = (text) =>{
   );
 }
 const styles = StyleSheet.create({
-
   errorMessage: {
     color: 'red',
   },
@@ -527,7 +580,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
 
-
   inputViewDropdown: {
     borderRadius: 8,
     width: '85%',
@@ -538,7 +590,7 @@ const styles = StyleSheet.create({
     borderColor: '#505050',
     marginVertical: 5,
   },
-  
+
   TextInput: {
     height: 50,
     flex: 1,
@@ -555,7 +607,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-  
+
     backgroundColor: globalColors.card,
   },
   registerText: {

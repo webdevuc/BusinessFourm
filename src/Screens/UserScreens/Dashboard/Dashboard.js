@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Linking,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {DATA} from '../../AdminScreens/Dashboard/dash';
@@ -22,6 +23,12 @@ export const SLIDER_WIDTH = Dimensions.get('window').width + 90;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.74);
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import Profile from 'react-native-vector-icons/Entypo';
+import reactotron from 'reactotron-react-native';
+import Calender from 'react-native-vector-icons/FontAwesome';
+
+import Rupees from 'react-native-vector-icons/MaterialIcons';
+import SocialIcon from 'react-native-vector-icons/Entypo';
+import {fb} from '../../../utils/constan';
 
 const Dashboard = props => {
   const isCarousel = React.useRef(null);
@@ -33,57 +40,104 @@ const Dashboard = props => {
   const [leadsLength, setLeadsLength] = useState([]);
 
   const getData = async () => {
-    const resposone = await axios.get(
-      'https://ibf.instantbusinesslistings.com/api/leads/index',
-      {
-        headers: {
-          Authorization: `Bearer ${userRes}`,
+    try {
+      const response = await axios.get(
+        'https://ibf.instantbusinesslistings.com/api/event/index',
+        {
+          headers: {
+            Authorization: `Bearer ${userRes}`,
+          },
         },
-      },
-    );
+      );
 
-    setAsycData(resposone?.data?.leads);
-    setLeadsLength(resposone.data?.leads.length);
+      setAsycData(response?.data?.leads);
+      setLeadsLength(response.data?.leads.length);
+    } catch (error) {
+      // Handle the error here
+
+      reactotron.log('Error occurred while fetching data:', error);
+      // You can also set any error state or display an error message to the user
+    }
+
+    // const resposone = await axios.get(
+    //   'https://ibf.instantbusinesslistings.com/api/event/index',
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${userRes}`,
+    //     },
+    //   },
+    // );
+
+    // setAsycData(resposone?.data?.leads);
+    // setLeadsLength(resposone.data?.leads.length);
   };
 
   useEffect(() => {
     getData();
   }, []);
 
+  const EventData = data => {
+    navigation.navigate('Event Details', {eventData: data});
+  };
+  const openLink = async url => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        reactotron.log('Cannot open the link:', url);
+      }
+    } catch (error) {
+      reactotron.log('Error opening the link:', error);
+    }
+  };
   const CarouselCardItem = ({item, index}) => {
     return (
       <>
-        <View style={styles.itemContainer} key={index}>
-          <View>
-            <Text style={styles.header}>{item.fullName}</Text>
-          </View>
+        <TouchableOpacity onPress={() => EventData(item)}>
+          <View style={styles.itemContainer} key={index}>
+            <View>
+              <Text style={styles.header}>{item.title}</Text>
+            </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: 10,
-              marginTop: 10,
-            }}>
-            <View style={{width: '50%', color: 'red'}}>
-              <View>
-                <Text style={styles.cardText}>Business Category </Text>
-                <Text style={styles.cardText}>Business Title </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+              <Image
+                source={require('../../../assets/mainLogo.jpg')} // Replace with your image source../../../assets/logo.png
+                style={styles.image}
+              />
+
+              <View style={{padding: 10}}>
+                <View style={{flexDirection: 'row'}}>
+                  <Icons
+                    name="location-pin"
+                    size={20}
+                    color="#fff"
+                    style={{marginTop: 3}}
+                  />
+                  <Text style={styles.cardTextR} numberOfLines={2}>
+                    {item.address}
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row', marginTop: 15}}>
+                  <Calender
+                    name="calendar-o"
+                    size={17}
+                    color="#fff"
+                    style={{marginTop: 3}}
+                  />
+                  <Text
+                    style={[styles.cardTextR, {marginLeft: 5}]}
+                    numberOfLines={2}>
+                    {item.date}
+                  </Text>
+                </View>
               </View>
             </View>
-            <View style={{width: '5%'}}>
-              <Text style={styles.cardText}>-</Text>
-              <Text style={styles.cardText}>-</Text>
-            </View>
-            <View style={{width: '50%'}}>
-              <Text style={styles.cardText} numberOfLines={1}>
-                {item.business_category_name}
-              </Text>
-              <Text style={styles.cardText} numberOfLines={1}>
-                {item.business_title}
-              </Text>
-            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </>
     );
   };
@@ -99,7 +153,7 @@ const Dashboard = props => {
               textAlign: 'center',
               color: '#264596',
             }}>
-            Top 3 Leads
+            Events
           </Text>
           <View>
             <Carousel
@@ -124,7 +178,12 @@ const Dashboard = props => {
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
                   <Text style={styles.title}>{'Leads Count'}</Text>
                   <View style={styles.insideText}>
-                    <Text style={{fontSize: 16,fontWeight:'bold', color: '#264596'}}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#264596',
+                      }}>
                       {leadsLength}
                     </Text>
                   </View>
@@ -136,9 +195,16 @@ const Dashboard = props => {
               <View
                 style={[styles.card1, {backgroundColor: globalColors.card}]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
-                  <Text style={styles.title}>{'Converted Count'}</Text>
+                  <Text style={styles.title}>{'Converted Leads'}</Text>
                   <View style={styles.insideText}>
-                    <Text style={{fontSize: 16,fontWeight:'bold', color: '#264596'}}>5</Text>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        color: '#264596',
+                      }}>
+                      5
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -170,6 +236,19 @@ const Dashboard = props => {
                     <Profile name="user" size={20} color="#264596" />
                   </View>
                 </View>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.row}>
+            <TouchableOpacity onPress={() => openLink(fb)}>
+              <View style={[{alignItems: 'center'}]}>
+                <SocialIcon name="facebook" size={30} color="#1773ea" />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={[{alignItems: 'center'}]}>
+                <SocialIcon name="instagram" size={30} color="#d62976" />
               </View>
             </TouchableOpacity>
           </View>
@@ -223,18 +302,18 @@ const styles = StyleSheet.create({
   },
 
   card1: {
-    height: 110,
-    width: 155,
+    height: 90,
+    width: 135,
     backgroundColor: 'red',
     borderRadius: 8,
     position: 'relative',
   },
   card2: {
-    height: 80,
-    width: 122,
+    height: 75,
+    width: 100,
     borderRadius: 5,
     position: 'absolute',
-    top: '63%',
+    top: '55%',
     right: '10%',
   },
   row: {
@@ -261,7 +340,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     marginVertical: 7,
-    color:'#264596'
+    color: '#264596',
   },
   imageLogo: {
     height: RFValue(18),
@@ -273,6 +352,21 @@ const styles = StyleSheet.create({
     height: RFValue(22),
     width: RFValue(22),
     tintColor: globalColors.primaryTheme,
+  },
+
+  cardTextR: {
+    color: globalColors.white,
+    fontSize: 15,
+    padding: 2,
+    flexDirection: 'row',
+    width: '100%',
+    flexWrap: 'wrap',
+  },
+  image: {
+    width: '50%',
+    height: 126, // Set the desired height for the image
+    resizeMode: 'cover',
+    borderBottomLeftRadius: 8,
   },
 });
 

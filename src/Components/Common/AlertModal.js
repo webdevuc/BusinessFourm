@@ -1,8 +1,8 @@
-
 import React from 'react';
-import { Modal, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-const AlertModal = (props) => {
-  const { visibility, confirm, cancel, title } = props;
+import {Modal, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {globalColors} from '../../theme/globalColors';
+const AlertModal = props => {
+  const {visibility, confirm, cancel, title} = props;
   return (
     <Modal
       animationType="slide"
@@ -24,18 +24,19 @@ const AlertModal = (props) => {
                   style={[
                     styles.touchable,
                     {
-                      backgroundColor: "red",
+                      backgroundColor: globalColors.card,
                     },
-                  ]}
-                >
-                  <Text style={[styles.buttonText, { color: "#fff" }]}>Yes</Text>
+                  ]}>
+                  <Text style={styles.buttonText}>Yes</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.button}>
-                <TouchableOpacity onPress={cancel} style={[
+                <TouchableOpacity
+                  onPress={cancel}
+                  style={[
                     styles.touchable,
                     {
-                      backgroundColor: "black",
+                      backgroundColor: globalColors.grey,
                     },
                   ]}>
                   <Text style={styles.buttonText}>Cancel</Text>
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     height: 180,
     width: 300,
     borderRadius: 10,
-    backgroundColor:"#fff",
+    backgroundColor: '#fff',
     borderWidth: 2,
     borderColor: 'white',
   },
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    color: "#132d4c",
+    color: '#132d4c',
     textAlign: 'center',
     fontWeight: 'bold',
   },
@@ -97,10 +98,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 15,
-    color: "#fff",
+    color: '#fff',
     fontWeight: 'bold',
   },
-  dark: { flex: 0.35 },
+  dark: {flex: 0.35},
   bodyCenter: {
     flex: 0.3,
     justifyContent: 'center',
