@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -7,6 +7,7 @@ import {
   Text,
   Linking,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {
   DrawerContentScrollView,
@@ -14,18 +15,16 @@ import {
 } from '@react-navigation/drawer';
 import LogOut from 'react-native-vector-icons/MaterialIcons';
 import {useNavigation} from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import reactotron from 'reactotron-react-native';
 import axios from 'axios';
-import { userLogout } from '../../actions/UserActions';
-
-
-
+import {userLogout} from '../../actions/UserActions';
 
 // const CustomSidebarMenu = ({navigation,...props}) => {
-  const CustomSidebarMenu = (props) => {
+const CustomSidebarMenu = props => {
+  const [loader, setLoader] = useState(false);
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const navigation = useNavigation();
   const userRes = useSelector(state => state?.user?.data?.data?.token);
@@ -34,48 +33,52 @@ import { userLogout } from '../../actions/UserActions';
   const userRole = useSelector(state => state?.user?.data?.data?.user.role);
   const [token, setToken] = useState(userRes);
 
-
-
-  const apiLogout=async()=>{
+  const apiLogout = async () => {
+    setLoader(true);
     const data = await axios.post(
       'https://ibf.instantbusinesslistings.com/api/logout',
       null,
       {
-        headers: 
-        {
+        headers: {
           'Content-type': 'application/json',
-          'Authorization': `Bearer ${userRes}`, // notice the Bearer before your token
+          Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
         },
-      }
-      );
+      },
+    );
 
-      dispatch(userLogout())
+    dispatch(userLogout());
 
-      reactotron.log("data--------------------",data1)
-   
-      navigateToOtherPage()
-     
-  }
+    reactotron.log('data--------------------', data1);
 
-// const handleLogout = async () =>{
-//   // apiLogout();
-//   ()=>navigation.navigate('Login')
-  
-// }
+    setLoader(false);
+    navigateToOtherPage();
+  };
 
+  // const handleLogout = async () =>{
+  //   // apiLogout();
+  //   ()=>navigation.navigate('Login')
 
-const navigateToOtherPage = () => {
-  // const navigation = useNavigation();
-  navigation.navigate('Login');
-};
- 
+  // }
+
+  const navigateToOtherPage = () => {
+    // const navigation = useNavigation();
+    navigation.navigate('Login');
+  };
+
   // const logOut = () => {};
   return (
     <SafeAreaView style={{flex: 1}}>
+      {loader && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000FF" />
+        </View>
+      )}
+
       <Image
         style={styles.sideMenuProfileIcon}
         source={require('../../assets/mainLogo.jpg')}
       />
+
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
@@ -88,8 +91,7 @@ const navigateToOtherPage = () => {
       <TouchableOpacity
         style={styles.customItem}
         // onPress={() => navigation.navigate('Login')}
-        onPress={apiLogout}
-        >
+        onPress={apiLogout}>
         <LogOut name="logout" size={20} color="red" />
         <Text style={{color: 'red', marginLeft: 4}}>Logout</Text>
       </TouchableOpacity>
@@ -101,9 +103,8 @@ const styles = StyleSheet.create({
   sideMenuProfileIcon: {
     marginVertical: 20,
     resizeMode: 'center',
-    width: 120,
-    height: 120,
-    borderRadius: 70,
+    width: 100,
+    height: 100,
     alignSelf: 'center',
   },
   iconStyle: {
@@ -116,6 +117,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loaderContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

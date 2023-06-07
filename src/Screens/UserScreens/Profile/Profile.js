@@ -453,7 +453,12 @@ const Profile = () => {
                       <Text style={{marginTop: 10, fontWeight: 'bold'}}>
                         Open with google map:
                       </Text>
-                      <Image source={googleMap} style={styles.mapIcon} />
+                      {/* <Image source={googleMap} style={styles.mapIcon} /> */}
+                      <Location
+                        name="location-pin"
+                        size={35}
+                        color={globalColors.darkGreen}
+                      />
                     </View>
                   </TouchableOpacity>
                 </>
@@ -530,16 +535,7 @@ const styles = StyleSheet.create({
     color: globalColors.grey,
     fontSize: 15,
   },
-  mapIcon: {
-    height: RFValue(35),
-    tintColor: globalColors.darkGreen,
-    width: RFValue(35),
-    // color: 'red',
-    // backgroundColor: 'red',
 
-    // position: 'absolute',
-    // right: 0,
-  },
   info: {
     alignItems: 'center',
     flexDirection: 'row',

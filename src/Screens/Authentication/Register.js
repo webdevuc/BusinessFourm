@@ -31,15 +31,15 @@ import {RNToasty} from 'react-native-toasty';
 export default function Register(props) {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [name, setName] = useState('dasd');
-  const [email, setEmail] = useState('email123@gmail.com');
-  const [mobile, setMobile] = useState('9895856256');
-  const [password, setPassword] = useState('12345678');
-  const [confirmPassword, setConfirmPassword] = useState('12345678');
-  const [businessName, setBusinessName] = useState('fsdf fsdf');
-  const [gst, setGst] = useState('dfgsd fsdfsd');
-  const [city, setCity] = useState('fdsf fsfsdf');
-  const [address, setAddress] = useState('sfdsdf sfsdfsdf');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [gst, setGst] = useState('');
+  const [city, setCity] = useState('');
+  const [address, setAddress] = useState('');
   const [category, setCategory] = useState(null);
   const [categoryID, setCategoryId] = useState(null);
 
@@ -539,18 +539,6 @@ export default function Register(props) {
             </TouchableOpacity>
           </View>
         </View>
-        {/* <View style={{height: 130, justifyContent: 'flex-end'}}>
-          <ImageBackground
-            style={{
-              height: '100%',
-              width: '100%',
-              justifyContent: 'flex-end',
-              backgroundColor: '#fff',
-              marginTop: 0,
-            }}
-            source={require('../../assets/Bottom-Design.png')}
-            resizeMode="stretch"></ImageBackground>
-        </View> */}
       </ScrollView>
     </>
   );

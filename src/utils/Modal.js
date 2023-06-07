@@ -10,14 +10,11 @@ import React, {useEffect} from 'react';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Close from 'react-native-vector-icons/MaterialIcons';
 import {globalColors} from '../theme/globalColors';
-import reactotron from 'reactotron-react-native';
 import {useSelector} from 'react-redux';
 import axios from 'axios';
 import {RNToasty} from 'react-native-toasty';
 const ModalView = ({setModalVisible, modalVisible, data, setUpdateList}) => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
-
-  reactotron.log('Business TOKEN--------->', userRes);
 
   // reactotron.log("business MODAL DAta---------->"+data.id)
 
@@ -54,7 +51,12 @@ const ModalView = ({setModalVisible, modalVisible, data, setUpdateList}) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Close name="close" size={25} style={styles.closeIcon} />
+              <Close
+                name="close"
+                size={10}
+                style={styles.closeIcon}
+                color={globalColors.white}
+              />
             </TouchableOpacity>
             <View style={styles.modalContainer}>
               <View style={{width: '45%'}}>
@@ -101,13 +103,15 @@ const ModalView = ({setModalVisible, modalVisible, data, setUpdateList}) => {
                 <> */}
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
-                style={[styles.button, {backgroundColor: globalColors.grey}]}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                style={[styles.noButton]}>
+                <Text style={[styles.buttonText, {color: globalColors.card}]}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 // onPress={() => setModalVisible(!modalVisible)}
                 onPress={handleApproveApi}
-                style={[styles.button, {backgroundColor: globalColors.card}]}>
+                style={[styles.button]}>
                 <Text style={styles.buttonText}>Approve</Text>
               </TouchableOpacity>
               {/* </>
@@ -152,7 +156,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: '50%',
     padding: 10,
-    backgroundColor: '#006666',
+    backgroundColor: globalColors.card,
+  },
+  noButton: {
+    width: '50%',
+    backgroundColor: globalColors.white,
+    borderWidth: 1,
+    borderColor: globalColors.card,
+    borderRadius: 5,
+    padding: 10,
   },
   buttonText: {
     fontSize: 14,
@@ -164,6 +176,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -10,
     top: -10,
+    padding: 3,
+    backgroundColor: globalColors.grey,
+    borderRadius: 50,
   },
   title: {
     fontSize: 16,

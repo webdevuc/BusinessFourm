@@ -6,11 +6,10 @@ import Profile from '../../Screens/UserScreens/Profile/Profile';
 import Dashboard from '../../Screens/UserScreens/Dashboard/Dashboard';
 import Report from '../../Screens/UserScreens/Report/Report';
 import DashboardIcon from 'react-native-vector-icons/MaterialIcons';
-import {View} from 'react-native';
+import {Image, View} from 'react-native';
 import DashboardStack from './UserStack/DashboardStack';
 import {globalColors} from '../../theme/globalColors';
 import AddLeads from '../../Screens/UserScreens/Leads/AddLeads';
-
 const Drawer = createDrawerNavigator();
 export default function UserNavigator(props) {
   const CustomIconComponent = ({focused, name}) => {
@@ -36,6 +35,16 @@ export default function UserNavigator(props) {
           color: 'white',
         },
         headerTintColor: '#fff',
+        headerRight: () => (
+            <Image
+              style={{
+                width: 60,
+                height: 55,
+                marginRight: 10
+              }}
+              source={require('../../assets/mainLogo.jpg')}
+            />
+        ),
       })}
       drawerContent={props => <CustomSidebarMenu {...props} />}>
       <Drawer.Screen
@@ -47,6 +56,11 @@ export default function UserNavigator(props) {
           ),
           headerShown: false,
           title: 'Dashboard',
+          headerRight: () => (
+            <TouchableOpacity onPress={() => console.log('Icon pressed')}>
+                <Icons name="view-list" size={20} color="#264596" />
+            </TouchableOpacity>
+          ),
         }}
       />
 
@@ -79,15 +93,6 @@ export default function UserNavigator(props) {
         }}
       />
 
-      <Drawer.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          drawerIcon: ({focused, size}) => (
-            <CustomIconComponent focused={focused} name="person" />
-          ),
-        }}
-      />
     </Drawer.Navigator>
   );
 }

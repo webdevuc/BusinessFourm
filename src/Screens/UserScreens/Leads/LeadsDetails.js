@@ -18,6 +18,7 @@ import reactotron from 'reactotron-react-native';
 import {globalColors} from '../../../theme/globalColors';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import EstimateIcon from 'react-native-vector-icons/FontAwesome';
+import Rupee from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {RNToasty} from 'react-native-toasty';
@@ -83,7 +84,13 @@ const LeadsDetails = ({route, navigation}) => {
       },
     );
     GetLeads();
-    navigation.navigate('Lead list');
+    RNToasty.Success({
+      title: 'Leads following Successfully',
+      position: 'bottom',
+    });
+    setTimeout(() => {
+      navigation.navigate('Lead list');
+    }, 800);
   };
 
   // const dataAmount = {
@@ -96,10 +103,13 @@ const LeadsDetails = ({route, navigation}) => {
     if (amount_closed) {
       RNToasty.Success({
         title: 'Deal close successfully..',
-        position: 'top',
+        position: 'bottom',
       });
     } else {
-      Toast.show('Please Enter Amount', Toast.LONG);
+      RNToasty.Error({
+        title: 'Please Enter Amount',
+        position: 'bottom',
+      });
     }
 
     if (amount_closed == '') {
@@ -134,55 +144,6 @@ const LeadsDetails = ({route, navigation}) => {
   return (
     <ScrollView style={{backgroundColor: '#fff'}}>
       <View style={styles.container}>
-        <Modal
-          visible={modalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={toggleModal}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <EstimateIcon
-                style={{alignSelf: 'flex-end'}}
-                name="close"
-                size={20}
-                color="red"
-                onPress={toggleModalClose}
-              />
-              <View style={styles.inputView}>
-                <EstimateIcon
-                  style={{marginBottom: 8}}
-                  name="rupee"
-                  size={22}
-                  color={globalColors.card}
-                />
-                <TextInput
-                  style={styles.modalText}
-                  placeholder="Enter Amount"
-                  value={amount_closed}
-                  keyboardType="number-pad"
-                  onChangeText={handleChangeAmount}
-                />
-                <Text style={{color: 'red'}}>
-                  {errorTitle ? <Text>Amount is required</Text> : ''}
-                </Text>
-              </View>
-              <Pressable onPress={handleConvert}>
-                <View
-                  style={{
-                    backgroundColor: globalColors.card,
-                    padding: 10,
-                    alignItems: 'center',
-                  }}>
-                  <Text
-                    style={{color: '#fff', fontSize: 16, fontWeight: 'bold'}}>
-                    Deal Close
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
         <View style={styles.detailsContainer}>
           <View style={{flexDirection: 'row'}}>
             <Icons
@@ -227,8 +188,8 @@ const LeadsDetails = ({route, navigation}) => {
           <Text style={styles.title}>{leadData.business_category_name}</Text>
 
           <View style={{flexDirection: 'row'}}>
-            <EstimateIcon
-              name="rupee"
+            <Rupee
+              name="currency-rupee"
               size={20}
               color="#264596"
               onPress={() => handleEditLeads(item)}
@@ -259,28 +220,6 @@ const LeadsDetails = ({route, navigation}) => {
           </View>
           <Text style={styles.title}>{leadData.description}</Text>
         </View>
-
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginTop: RFValue(30),
-          }}>
-          {leadData.followers.includes(userRes) ? (
-            <TouchableOpacity
-              // onPress={handleConvert}
-              onPress={toggleModal}
-              style={[styles.button, {backgroundColor: '#008080'}]}>
-              <Text style={styles.buttonText}>Convert</Text>
-            </TouchableOpacity>
-          ) :  (
-            <TouchableOpacity
-              onPress={handleFollowing}
-              style={[styles.button, {backgroundColor: '#006600'}]}>
-              <Text style={styles.buttonText}>Follow up</Text>
-            </TouchableOpacity>
-          )}
-        </View> */}
 
         <View
           style={{
@@ -314,11 +253,68 @@ const LeadsDetails = ({route, navigation}) => {
                 styles.button,
                 {width: 299, backgroundColor: globalColors.card},
               ]}>
-              <Text style={styles.buttonText}>Follow up</Text>
+              <Text style={styles.buttonText}>Follow Up</Text>
             </TouchableOpacity>
           )}
         </View>
       </View>
+
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={toggleModal}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <EstimateIcon
+              style={styles.closeIcon}
+              name="close"
+              size={10}
+              color={globalColors.white}
+              onPress={toggleModalClose}
+            />
+            <View style={styles.inputView}>
+              <EstimateIcon
+                style={{marginBottom: 8}}
+                name="rupee"
+                size={22}
+                color={globalColors.card}
+              />
+
+              <TextInput
+                style={styles.modalText}
+                placeholder="Enter Amount*"
+                value={amount_closed}
+                keyboardType="number-pad"
+                onChangeText={handleChangeAmount}
+              />
+            </View>
+            {/* <View>
+              <Text style={{color: globalColors.red, paddingBottom: 10}}>
+                {errorTitle && <Text>Amount is required</Text>}
+              </Text>
+            </View> */}
+            <Pressable onPress={handleConvert}>
+              <View
+                style={{
+                  backgroundColor: globalColors.card,
+                  padding: 10,
+                  alignItems: 'center',
+                  borderRadius: 5,
+                }}>
+                <Text
+                  style={{
+                    color: '#fff',
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                  }}>
+                  Deal Close
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -334,6 +330,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 5,
+    width: '80%',
   },
   modalText: {
     fontSize: 18,
@@ -387,7 +384,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   button: {
-    borderRadius: 10,
+    borderRadius: 5,
     paddingVertical: RFValue(13),
     marginLeft: RFValue(30),
     // backgroundColor: '#006666',
@@ -400,17 +397,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
   },
+  closeIcon: {
+    position: 'absolute',
+    right: 4,
+    top: 4,
+    padding: 4,
+    backgroundColor: globalColors.grey,
+    borderRadius: 50,
+  },
   inputView: {
     backgroundColor: globalColors.white,
-
-    // height: 50,
-    justifyContent: 'center',
     borderWidth: 0,
     border: 'none',
-    borderBottomWidth: 0.5,
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    gap: 7,
   },
 });
 

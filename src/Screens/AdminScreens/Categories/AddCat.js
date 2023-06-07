@@ -23,6 +23,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {saveToken} from '../../../actions/UserActions';
 import {globalColors} from '../../../theme/globalColors';
 import {RFValue} from 'react-native-responsive-fontsize';
+import DeleteModal from '../../../Components/Common/DeleteModal';
 
 export default function AddCat({navigation}) {
   const dispatch = useDispatch();
@@ -100,11 +101,12 @@ export default function AddCat({navigation}) {
 
     const resposone = await axios.post(
       `https://ibf.instantbusinesslistings.com/api/business_category/${editingIndex}/update`,
+
       payload,
       {
         headers: {
           'Content-type': 'application/json',
-          Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
+          Authorization: `Bearer ${userRes}`,
         },
       },
     );
@@ -116,8 +118,8 @@ export default function AddCat({navigation}) {
     setEditingIndex(null);
 
     RNToasty.Success({
-      title: 'Category updates successfully..',
-      position: 'top',
+      title: 'Category updates successfully.',
+      position: 'bottom',
     });
   };
 
@@ -127,13 +129,25 @@ export default function AddCat({navigation}) {
   };
 
   const confirm = async () => {
-    await axios.delete(`http://192.168.1.60:3000/addCategory/${deleteId}`);
-    getData();
+    const res = await axios.post(
+      `https://ibf.instantbusinesslistings.com/api/business_category/${deleteId}/delete`,
+      {},
+      {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${userRes}`,
+        },
+      },
+    );
     setDeleteModal(false);
-    RNToasty.Success({
-      title: 'Category deleted successfully..',
-      position: 'bottom',
-    });
+
+    if (res.status == 200) {
+      RNToasty.Success({
+        title: res.data.message,
+        position: 'bottom',
+      });
+    }
+    await getData();
   };
 
   const cancel = () => {
@@ -211,13 +225,13 @@ export default function AddCat({navigation}) {
         </View>
         {loader && (
           <View style={[styles.container, styles.horizontal]}>
-            <ActivityIndicator size="large" color="#008080" />
+            <ActivityIndicator size="large" color={globalColors.card} />
           </View>
         )}
         <ScrollView>{userData}</ScrollView>
       </View>
 
-      <AlertModal
+      <DeleteModal
         visibility={deleteModal}
         confirm={() => {
           confirm();
@@ -225,7 +239,7 @@ export default function AddCat({navigation}) {
         cancel={() => {
           cancel();
         }}
-        title={'Are you sure you want to category?'}
+        title={'Are you sure you want to delete category?'}
       />
     </View>
   );
@@ -327,11 +341,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  loginText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
   box: {
     marginTop: 10,
     backgroundColor: '#ff9900',

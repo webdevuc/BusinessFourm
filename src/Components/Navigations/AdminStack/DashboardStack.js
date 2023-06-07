@@ -1,10 +1,10 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Dashboard from '../../../Screens/AdminScreens/Dashboard/Dashboard';
 import Userlist from '../../../Screens/AdminScreens/BusinessList/BusinessList';
 import LeadsList from '../../../Screens/AdminScreens/LeadsList/LeadsList';
 import ConvertedLeads from '../../../Screens/AdminScreens/ConvertedLeads/ConvertedLeads';
-import { TouchableOpacity, Image } from 'react-native'
+import {TouchableOpacity, Image} from 'react-native';
 import Menu from 'react-native-vector-icons/MaterialIcons';
 import Report from '../../../Screens/AdminScreens/Report/Report';
 import AddBusiness from '../../../Screens/AdminScreens/Categories/Categories';
@@ -18,21 +18,36 @@ import Login from '../../../Screens/Authentication/Login';
 import AddLeads from '../../../Screens/UserScreens/Leads/AddLeads';
 import Leads from '../../../Screens/UserScreens/Leads/Leads';
 import TotalEarning from '../../../Screens/AdminScreens/TotalEarning';
+import AddEvents from '../../../Screens/AdminScreens/BusinessEvents/AddEvents';
+// import EventDetails from '../../../Screens/AdminScreens/BusinessEvents/EventDetails';
+import LeadsDetails from '../../../Screens/UserScreens/Leads/LeadsDetails';
+// import EventsList from '../../../Screens/AdminScreens/BusinessEvents/EventsList';
 
 const Stack = createNativeStackNavigator();
 
 export default function DashboardStack(props) {
   return (
-    <Stack.Navigator screenOptions={{
-      headerStyle: {
-        backgroundColor: '#264596',
-      },
-      headerTitleStyle: {
-        color: 'white',
-      },
-      headerTintColor: '#fff',
-      headerShadowVisible: false,
-    }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#264596',
+        },
+        headerTitleStyle: {
+          color: 'white',
+        },
+        headerTintColor: '#fff',
+        headerShadowVisible: false,
+        headerRight: () => (
+          <Image
+            style={{
+              width: 60,
+              height: 55,
+              marginRight: 10,
+            }}
+            source={require('../../../assets/mainLogo.jpg')}
+          />
+        ),
+      }}>
       <Stack.Screen
         name="Dashboard"
         component={Dashboard}
@@ -40,8 +55,12 @@ export default function DashboardStack(props) {
           headerShown: true,
           headerLeft: () => (
             <TouchableOpacity onPress={() => props.navigation.toggleDrawer()}>
-              <Menu name='menu' color="#fff" size={30} style={{ marginRight: 10 }} />
-              
+              <Menu
+                name="menu"
+                color="#fff"
+                size={30}
+                style={{marginRight: 10}}
+              />
             </TouchableOpacity>
           ),
         }}
@@ -51,24 +70,23 @@ export default function DashboardStack(props) {
         component={BusinessList}
         options={{
           headerShown: true,
-
         }}
       />
       <Stack.Screen
         name="Leads List"
         component={LeadsList}
-        options={{ headerShown: true }}
+        options={{headerShown: true}}
       />
       <Stack.Screen
         name="convertedBusiness"
         component={ConvertedBusiness}
-        options={{ headerShown: true }}
+        options={{headerShown: true}}
       />
 
       <Stack.Screen
         name="Business Report"
         component={Report}
-        options={{ headerShown: true }}
+        options={{headerShown: true}}
       />
 
       {/* <Stack.Screen
@@ -80,7 +98,7 @@ export default function DashboardStack(props) {
       <Stack.Screen
         name="Add Category"
         component={AddCat}
-        options={{ headerShown: true }}
+        options={{headerShown: true}}
       />
 
       {/* <Stack.Screen
@@ -101,15 +119,29 @@ export default function DashboardStack(props) {
         // options={{ headerShown: false }}
       />
 
-
       <Stack.Screen
         name="Total Earning"
         component={TotalEarning}
         // options={{ headerShown: false }}
       />
 
+      {/* <Stack.Screen
+        name="Events List"
+        component={EventsList}
+        // options={{ headerShown: false }}
+      /> */}
+
+      <Stack.Screen
+        name="Add Events"
+        component={AddEvents}
+        // options={{ headerShown: false }}
+      />
+
+      {/* <Stack.Screen name="Event Details" component={EventDetails} /> */}
+
+      <Stack.Screen name="Leads Details" component={LeadsDetails} />
     </Stack.Navigator>
   );
 }
 
-export { DashboardStack };
+export {DashboardStack};

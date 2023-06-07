@@ -14,21 +14,17 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {globalColors} from '../../../theme/globalColors';
-import profile from '../../../assets/Dummy/profile.jpg';
 import Location from 'react-native-vector-icons/MaterialIcons';
-import Edit from 'react-native-vector-icons/MaterialIcons';
-import Save from 'react-native-vector-icons/MaterialIcons';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import ImagePicker from 'react-native-image-picker';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import reactotron from 'reactotron-react-native';
 // import Geocoder from 'react-native-geocoding';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/Feather';
 
-// import googleMap from '../../../assets/Map/maps.png';
-import googleMap from '../../../assets/user.png';
+// import googleMap from '../../../assets/ maps.png';
 // Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
 // location-pin
 
@@ -147,35 +143,6 @@ const Profile = () => {
           </View>
 
           <View style={styles.header}>
-            {/* <TouchableOpacity onPress={handleSelectImage}>
-          <Image
-            style={styles.image}
-            source={{
-              uri: pic
-                ? pic
-                : 'https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg',
-            }}
-            resizeMode={'contain'}
-          />
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 20,
-              padding: 5,
-            }}>
-            <Edit name="edit" size={16} color={globalColors.white} />
-            <Text>edit</Text>
-          </View>
-          {selectedImage && (
-            <Image
-              source={{uri: selectedImage}}
-              style={{width: 200, height: 200}}
-            />
-          )}
-        </TouchableOpacity> */}
-
             <View style={styles.container1}>
               <Image
                 style={styles.image}
@@ -295,7 +262,11 @@ const Profile = () => {
                       <Text style={{marginTop: 10, fontWeight: 'bold'}}>
                         Open with google map:
                       </Text>
-                      <Image source={googleMap} style={styles.mapIcon} />
+                      <Location
+                        name="location-pin"
+                        size={35}
+                        color={globalColors.darkGreen}
+                      />
                     </View>
                   </TouchableOpacity>
                 </>

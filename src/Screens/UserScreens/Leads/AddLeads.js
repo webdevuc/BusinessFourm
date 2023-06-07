@@ -163,13 +163,13 @@ const AddLeads = ({props, route}) => {
       {
         headers: {
           'Content-type': 'application/json',
-          Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
+          Authorization: `Bearer ${userRes}`,
         },
       },
     );
     RNToasty.Success({
-      title: 'Leads updated successfully..',
-      position: 'top',
+      title: 'Leads created successfully..',
+      position: 'bottom',
     });
     navigateToOtherPage();
   };
@@ -227,7 +227,6 @@ const AddLeads = ({props, route}) => {
       position: 'bottoms',
     });
     navigateToOtherPage();
-    reactotron.log('UPDATE LEDAS----->', updateData);
     // addLeadsApi();
   };
 
@@ -265,7 +264,7 @@ const AddLeads = ({props, route}) => {
               onChangeText={handleChangeDescription}
             />
             <Text style={{color: 'red'}}>
-              {errorDescription ? <Text>Description is required</Text> : ''}
+              {errorDescription && <Text>Description is required</Text>}
             </Text>
           </View>
 

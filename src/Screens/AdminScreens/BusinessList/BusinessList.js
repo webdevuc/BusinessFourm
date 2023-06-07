@@ -158,18 +158,11 @@ const BusinessList = ({navigation}) => {
           </View>
         ) : (
           <FlatList
-            // ListEmptyComponent={() => {
-            //   return (
-            //     <Text style={{textAlign: 'center', marginVertical: 25}}>
-            //       No data Found
-            //     </Text>
-            //   );
-            // }}
             ListEmptyComponent={() => {
               return <EmptyComponent title={'  No data Found.'} />;
             }}
             contentContainerStyle={styles.listContentContainer}
-            data={[]}
+            data={results}
             renderItem={renderItem}
             keyExtractor={item => item.id}
           />

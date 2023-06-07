@@ -1,3 +1,16 @@
+// import { View, Text } from 'react-native'
+// import React from 'react'
+
+// const Events = () => {
+//   return (
+//     <View>
+//       <Text>Events</Text>
+//     </View>
+//   )
+// }
+
+// export default Events
+
 import React, {useState, useEffect} from 'react';
 import {
   ActivityIndicator,
@@ -5,31 +18,38 @@ import {
   FlatList,
   Image,
   Pressable,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-
+import moment from 'moment';
+import idx from 'idx';
 import {globalColors} from '../../../theme/globalColors';
-import {RFValue} from 'react-native-responsive-fontsize';
+import {RFPercentage, RFValue} from 'react-native-responsive-fontsize';
+import user from '../../../assets/user.png';
 import EmptyComponent from '../../../Components/Common/EmptyComponent';
+import Toast from 'react-native-simple-toast';
+import sort from '../../../assets/sort.png';
 import searchIcon from '../../../assets/Search.png';
 import SortModal from '../../../Components/Common/SortModal';
+import {UserData} from '../../AdminScreens/BusinessList/UserData';
+import Eye from 'react-native-vector-icons/EvilIcons';
 import Icons from 'react-native-vector-icons/MaterialIcons';
+import ModalView from '../../../utils/Modal';
 import axios from 'axios';
 import reactotron from 'reactotron-react-native';
 import {useSelector} from 'react-redux';
 import ModalLeads from '../../../utils/ModalLeads';
-import {useIsFocused} from '@react-navigation/native';
-import DeleteModal from '../../../Components/Common/DeleteModal';
+import AlertModal from '../../../Components/Common/AlertModal';
 import {RNToasty} from 'react-native-toasty';
 
 const {width} = Dimensions.get('window');
 const itemWidth = width * 0.9;
 
-const Leads = ({navigation}) => {
+const EventsList = ({props, navigation}) => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
 
   const userID = useSelector(state => state?.user?.data?.data?.user?.id);
@@ -46,32 +66,26 @@ const Leads = ({navigation}) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [asycData, setAsycData] = useState([]);
 
-  const isFocused = useIsFocused();
-
   const getData = async () => {
     setLoader(true);
     const resposone = await axios.get(
-      'https://ibf.instantbusinesslistings.com/api/leads/index',
+      'https://ibf.instantbusinesslistings.com/api/event/index',
       {
         headers: {
           Authorization: `Bearer ${userRes}`,
         },
       },
     );
-    const leadsData = resposone?.data?.leads;
-    const filteredData = leadsData.filter(lead =>
-      lead.followers.includes(userID),
-    );
-    setFollowers(filteredData);
+
+    reactotron.log('FOLLOWERS ID-------->', resposone?.data?.leads);
+
     setAsycData(resposone?.data?.leads);
     setLoader(false);
   };
 
   useEffect(() => {
-    if (isFocused) {
-      getData();
-    }
-  }, [isFocused]);
+    getData();
+  }, []);
 
   const handleModalVisible = data => {
     setData(data);
@@ -81,22 +95,21 @@ const Leads = ({navigation}) => {
   const results = asycData?.filter(post => {
     if (search === '') {
       return post;
-    } else if (
-      post.business_title.toLowerCase().includes(search.toLowerCase()) ||
-      post.business_category.toLowerCase().includes(search.toLowerCase())
-    ) {
+    } else if (post.title.toLowerCase().includes(search.toLowerCase())) {
       return post;
     }
   });
 
   const deleteUser = id => {
+    reactotron.log('DELETE EVENT ID', id);
     setDeleteId(id);
     setDeleteModal(true);
   };
 
   const confirm = async () => {
+    setLoader(true);
     const del = await axios.post(
-      `https://ibf.instantbusinesslistings.com/api/leads/${deleteId}/delete`,
+      `https://ibf.instantbusinesslistings.com/api/event/delete/${deleteId}`,
       {},
       {
         headers: {
@@ -105,77 +118,72 @@ const Leads = ({navigation}) => {
       },
     );
 
-    getData();
-    RNToasty.Success({
-      title: 'Leads deleted successfully.',
-      position: 'bottom',
-    });
+    reactotron.log('DELLELLELELELELE----------->', del);
 
+    getData();
     setDeleteModal(false);
+    RNToasty.Warn({
+      title: 'Events deleted successfully..',
+      position: 'top',
+    });
+    setLoader(false);
   };
 
   const cancel = () => {
     setDeleteModal(false);
   };
 
-  const handleEditLeads = data => {
-    navigation.navigate('Add Leads', {leadsData: data});
+  const EventData = data => {
+    // reactotron.log(data)
+    navigation.navigate('Event Details', {eventData: data});
   };
 
-  const handleDetailsLeads = data => {
-    navigation.navigate('Leads Details', {leadsData: data});
+  const handleEditEvents = data => {
+    navigation.navigate('Add Events', {editEventData: data});
   };
 
   const renderItem = ({item}) => (
     <View style={styles.container}>
-      <Pressable onPress={() => handleDetailsLeads(item)}>
+      <Pressable onPress={() => EventData(item)}>
         <View style={[styles.item, {backgroundColor: '#ebeffa', elevation: 2}]}>
           <View style={styles.contentContainer}>
             <View style={styles.rowContainer}>
               <View style={styles.businessTitleContainer}>
-                <Text style={styles.label}>Business Title</Text>
-                <Text style={styles.businessTitle}>{item.business_title}</Text>
+                <Text style={styles.label}>Event title</Text>
+                <Text style={styles.businessTitle}>{item.title}</Text>
               </View>
 
               <View style={styles.categoryContainer}>
-                <Text style={styles.label}>Category</Text>
-                <Text style={styles.category}>
-                  {item.business_category_name}
-                </Text>
+                <Text style={styles.label}>Date</Text>
+                <Text style={styles.category}>{item.date}</Text>
               </View>
 
-              {item.added_by == userID ? (
-                <View style={styles.addButtonContainer}>
-                  <View>
-                    <Icons
-                      name="edit"
-                      size={20}
-                      color="#264596"
-                      onPress={() => handleEditLeads(item)}
-                    />
-                  </View>
-                  <View>
-                    <Icons
-                      name="delete"
-                      size={20}
-                      color="#ff3300"
-                      onPress={() => deleteUser(item.id)}
-                      style={{marginTop: 10}}
-                    />
-                  </View>
-                </View>
-              ) : (
-                ''
-              )}
+              <View style={styles.addButtonContainer}>
+                <TouchableOpacity>
+                  <Icons
+                    name="edit"
+                    size={20}
+                    color="#264596"
+                    onPress={() => handleEditEvents(item)}
+                  />
+                </TouchableOpacity>
+                <Icons
+                  name="delete"
+                  size={20}
+                  color="#ff3300"
+                  onPress={() => deleteUser(item.id)}
+                  style={{marginTop: 10}}
+                />
+              </View>
             </View>
 
-            {followers.map(ele =>
-              ele.id === item.id ? (
-                <View style={styles.followingContainer}>
-                  <Text style={styles.followingText}>Following</Text>
-                </View>
-              ) : null,
-            )}
+            {/* {followers.map((ele) =>
+            ele.id === item.id ? (
+              <View style={styles.followingContainer}>
+                <Text style={styles.followingText}>Following</Text>
+              </View>
+            ) : null
+          )} */}
           </View>
         </View>
       </Pressable>
@@ -194,8 +202,8 @@ const Leads = ({navigation}) => {
             maxLength={250}
             value={search}
             onChangeText={text => setSearch(text)}
-            placeholder={'Search by Category/Name'}
-            // placeholderTextColor={globalColors.grey}
+            placeholder={'Search by event title'}
+            placeholderTextColor={globalColors.grey}
             style={styles.searchInput}
           />
           <TouchableOpacity
@@ -206,6 +214,18 @@ const Leads = ({navigation}) => {
             {/* <Image source={sort} style={styles.searchIcon} /> */}
           </TouchableOpacity>
         </View>
+        {/* 
+        <View
+          style={{
+            marginVertical: 15,
+            backgroundColor: '#264596',
+            alignItems:'center',
+            borderRadius: 50,
+          }}>
+            <Pressable onPress={() => navigation.navigate('Add Events')} style={{marginTop:2}}>
+              <Icons name="add" size={30} color='#fff'/>
+          </Pressable>
+        </View> */}
 
         <View
           style={{
@@ -215,27 +235,33 @@ const Leads = ({navigation}) => {
             borderRadius: 50,
             padding: 6,
           }}>
-          <Pressable onPress={() => navigation.navigate('Add Leads')}>
+          <Pressable onPress={() => navigation.navigate('Add Events')}>
             <Icons name="add" size={22} color="#fff" />
           </Pressable>
         </View>
       </View>
 
-      {loader ? (
+      {loader && (
         <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color={globalColors.card} />
+          <ActivityIndicator size="large" color="#008080" />
         </View>
-      ) : (
-        <FlatList
-          data={results}
-          ListEmptyComponent={() => {
-            return <EmptyComponent title={'  No data Found.'} />;
-          }}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          extraData={selectedId}
-        />
       )}
+
+      <FlatList
+        data={results}
+        ListEmptyComponent={() => {
+          return (
+            <Text style={{textAlign: 'center', marginVertical: 25}}>
+              {' '}
+              No data Found
+            </Text>
+          );
+        }}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        extraData={selectedId}
+      />
+
       {modalVisible && (
         <ModalLeads
           modalVisible={modalVisible}
@@ -256,7 +282,7 @@ const Leads = ({navigation}) => {
         }}
       />
 
-      <DeleteModal
+      <AlertModal
         visibility={deleteModal}
         confirm={() => {
           confirm();
@@ -264,13 +290,13 @@ const Leads = ({navigation}) => {
         cancel={() => {
           cancel();
         }}
-        title={'Are you sure you want to delete this Leads?'}
+        title={'Are you sure you want to delete this address?'}
       />
     </View>
   );
 };
 
-export default Leads;
+export default EventsList;
 
 const styles = StyleSheet.create({
   searchBarView: {
@@ -372,21 +398,19 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   addButtonContainer: {
-    // marginLeft: 10,
-    // flex: 1,
-    gap: 5,
+    marginLeft: 10,
   },
   followingContainer: {
     borderRadius: 10,
     backgroundColor: globalColors.card,
     width: 80,
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
     paddingHorizontal: 5,
-    paddingVertical: 3,
+    paddingVertical: 2,
   },
   followingText: {
     color: '#fff',
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'center',
   },
 });
