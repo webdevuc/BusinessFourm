@@ -45,6 +45,7 @@ import {useSelector} from 'react-redux';
 import ModalLeads from '../../../utils/ModalLeads';
 import AlertModal from '../../../Components/Common/AlertModal';
 import {RNToasty} from 'react-native-toasty';
+import DeleteModal from '../../../Components/Common/DeleteModal';
 
 const {width} = Dimensions.get('window');
 const itemWidth = width * 0.9;
@@ -135,7 +136,7 @@ const EventsList = ({props, navigation}) => {
 
   const EventData = data => {
     // reactotron.log(data)
-    navigation.navigate('Event Details', {eventData: data});
+    navigation.navigate('EventDetails', {eventData: data});
   };
 
   const handleEditEvents = data => {
@@ -243,7 +244,7 @@ const EventsList = ({props, navigation}) => {
 
       {loader && (
         <View style={[styles.container, styles.horizontal]}>
-          <ActivityIndicator size="large" color="#008080" />
+          <ActivityIndicator size="large" color={globalColors.card} />
         </View>
       )}
 
@@ -282,7 +283,7 @@ const EventsList = ({props, navigation}) => {
         }}
       />
 
-      <AlertModal
+      <DeleteModal
         visibility={deleteModal}
         confirm={() => {
           confirm();
@@ -290,7 +291,7 @@ const EventsList = ({props, navigation}) => {
         cancel={() => {
           cancel();
         }}
-        title={'Are you sure you want to delete this address?'}
+        title={'Are you sure you want to delete this Event?'}
       />
     </View>
   );

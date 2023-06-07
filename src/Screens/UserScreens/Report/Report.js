@@ -24,10 +24,10 @@ import {
   ScrollView,
   Image,
   Button,
+  TextInput,
 } from 'react-native';
 import {Table, TableWrapper, Row, Cell} from 'react-native-table-component';
 import {globalColors} from '../../../theme/globalColors';
-import {TextInput} from 'react-native-gesture-handler';
 import searchIcon from '../../../assets/Search.png';
 import {RFValue} from 'react-native-responsive-fontsize';
 import SortModal from '../../../Components/Common/SortModal';
@@ -155,11 +155,11 @@ const Report = () => {
     }
     return asycData.filter(
       data =>
-        data.name.toLowerCase().includes(search.toLowerCase()) ||
-        data.name_of_business.toLowerCase().includes(search.toLowerCase()) ||
+        data.name?.toLowerCase().includes(search?.toLowerCase()) ||
+        data.name_of_business?.toLowerCase().includes(search?.toLowerCase()) ||
         data.business_category_name
           .toLowerCase()
-          .includes(search.toLowerCase()),
+          .includes(search?.toLowerCase()),
       // data.name_of_business.toString().includes(search)
     );
   };

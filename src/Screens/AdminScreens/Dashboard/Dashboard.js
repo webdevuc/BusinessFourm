@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   Linking,
+  Pressable,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {DATA} from '../../AdminScreens/Dashboard/dash';
@@ -36,6 +37,7 @@ const DashboardAdmin = props => {
   const [asycData, setAsycData] = useState([]);
   const [leadsLength, setLeadsLength] = useState([]);
   const [userLength, serUserLength] = useState([]);
+  const [lead, setLead] = useState([]);
 
   const getData = async () => {
     const resposone = await axios.get(
@@ -62,23 +64,37 @@ const DashboardAdmin = props => {
     );
     serUserLength(response.data?.Users?.length);
   };
+  const getTopLeads = async () => {
+    const resposone = await axios.get(
+      'https://ibf.instantbusinesslistings.com/api/leads/index',
+      {
+        headers: {
+          Authorization: `Bearer ${userRes}`,
+        },
+      },
+    );
+
+    setLead(resposone?.data?.leads?.slice(0, 3));
+  };
 
   useEffect(() => {
     UserLength();
     getData();
+    getTopLeads();
   }, []);
 
+  // reactotron.log('Leads----', lead);
   const gotoBusinessList = () => {
     navigation.navigate('Business List');
   };
 
   const isCarousel = React.useRef(null);
+  const isCarouselLead = React.useRef(null);
   const navigation = useNavigation();
 
   const EventData = data => {
-    navigation.navigate('Event Details', {eventData: data});
+    navigation.navigate('EventDetails', {eventData: data});
   };
-
   const openLink = async url => {
     try {
       const supported = await Linking.canOpenURL(url);
@@ -92,10 +108,14 @@ const DashboardAdmin = props => {
     }
   };
 
+  const leadList = data => {
+    navigation.navigate('Leads Details', {leadsData: data});
+  };
+
   const CarouselCardItem = ({item, index}) => {
     return (
       <>
-        <TouchableOpacity onPress={() => EventData(item)}>
+        <Pressable onPress={() => EventData(item)}>
           <View style={styles.itemContainer} key={index}>
             <View>
               <Text style={styles.header}>{item.title}</Text>
@@ -138,7 +158,7 @@ const DashboardAdmin = props => {
               </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </>
     );
   };
@@ -181,6 +201,7 @@ const DashboardAdmin = props => {
             justifyContent: 'center',
             borderTopLeftRadius: 25,
             borderTopRightRadius: 25,
+            marginBottom: RFValue(5),
           }}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => navigation.navigate('Lead list')}>
@@ -242,7 +263,7 @@ const DashboardAdmin = props => {
               </View>
             </View>
           </View>
-          <View style={styles.row}>
+          {/* <View style={styles.row}>
             <TouchableOpacity onPress={() => openLink(fb)}>
               <View style={[{alignItems: 'center'}]}>
                 <SocialIcon name="facebook" size={30} color="#1773ea" />
@@ -253,6 +274,44 @@ const DashboardAdmin = props => {
                 <SocialIcon name="instagram" size={30} color="#d62976" />
               </View>
             </TouchableOpacity>
+          </View> */}
+          <View>
+            <Text style={styles.leadsTitle}>Recent Leads</Text>
+
+            <View style={styles.table}>
+              <View
+                style={[
+                  styles.tableHeader,
+                  {backgroundColor: '#b3c6ff', width: '100%'},
+                ]}>
+                <Text
+                  style={[
+                    styles.tableContent,
+                    {fontWeight: '500', fontSize: RFValue(15)},
+                  ]}>
+                  Business Title
+                </Text>
+                <Text
+                  style={[
+                    styles.tableContent,
+                    {fontWeight: '500', fontSize: RFValue(15)},
+                  ]}>
+                  Category
+                </Text>
+              </View>
+              {lead.map((item, i) => (
+                <TouchableOpacity
+                  onPress={() => leadList(item)}
+                  style={styles.tableHeader}>
+                  <Text style={styles.tableContent} numberOfLines={1}>
+                    {item?.business_title}
+                  </Text>
+                  <Text style={styles.tableContent} numberOfLines={1}>
+                    {item?.business_category_name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -291,10 +350,37 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
-    elevation: 7,
+    elevation: 4,
     height: RFPercentage(20),
     marginTop: 10,
     marginBottom: 10,
+  },
+  leadContainer: {
+    flexDirection: 'row',
+    backgroundColor: globalColors.card,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 4,
+    // justifyContent: 'space-between',
+    // paddingHorizontal: 20,
+    paddingLeft: RFValue(20),
+    gap: RFValue(30),
+    height: RFValue(85),
+  },
+  leadHeader: {
+    color: globalColors.white,
+    fontSize: RFValue(16),
+    fontWeight: 'bold',
+    marginVertical: RFValue(5),
+  },
+  leadContent: {
+    color: globalColors.white,
   },
   cardText: {
     color: globalColors.white,
@@ -374,6 +460,43 @@ const styles = StyleSheet.create({
     height: 91, // Set the desired height for the image
     resizeMode: 'cover',
     borderBottomLeftRadius: 8,
+  },
+
+  table: {
+    width: '90%',
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 5,
+    overflow: 'hidden',
+    // paddingHorizontal: 4,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+  },
+  tableContent: {
+    flex: 1,
+    paddingVertical: 5,
+    // textAlign: 'center',
+    paddingLeft: RFValue(15),
+    fontSize: 14,
+    color: globalColors.black,
+    // alignContent: 'center',
+    // color:'#fff'
+  },
+
+  leadsTitle: {
+    color: globalColors.black,
+    fontWeight: '500',
+    fontSize: RFValue(16),
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginVertical: RFValue(10),
   },
 });
 

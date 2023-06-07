@@ -19,6 +19,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import reactotron from 'reactotron-react-native';
 import axios from 'axios';
 import {userLogout} from '../../actions/UserActions';
+import SocialIcon from 'react-native-vector-icons/Entypo';
+import {fb} from '../../utils/constan';
 
 // const CustomSidebarMenu = ({navigation,...props}) => {
 const CustomSidebarMenu = props => {
@@ -66,6 +68,19 @@ const CustomSidebarMenu = props => {
   };
 
   // const logOut = () => {};
+
+  const openLink = async url => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        reactotron.log('Cannot open the link:', url);
+      }
+    } catch (error) {
+      reactotron.log('Error opening the link:', error);
+    }
+  };
   return (
     <SafeAreaView style={{flex: 1}}>
       {loader && (
@@ -76,18 +91,32 @@ const CustomSidebarMenu = props => {
 
       <Image
         style={styles.sideMenuProfileIcon}
-        source={require('../../assets/mainLogo.jpg')}
+        source={require('../../assets/drawerLogo.png')}
       />
 
       <DrawerContentScrollView {...props}>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
+
+      <View style={styles.socialIcons}>
+        <TouchableOpacity onPress={() => openLink(fb)}>
+          <View style={[{alignItems: 'center'}]}>
+            <SocialIcon name="facebook" size={30} color="#1773ea" />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <View style={[{alignItems: 'center'}]}>
+            <SocialIcon name="instagram" size={30} color="#d62976" />
+          </View>
+        </TouchableOpacity>
+      </View>
       <View
         style={{
           borderBottomColor: '#f0f0f0',
           borderBottomWidth: 2,
         }}
       />
+
       <TouchableOpacity
         style={styles.customItem}
         // onPress={() => navigation.navigate('Login')}
@@ -102,7 +131,6 @@ const CustomSidebarMenu = props => {
 const styles = StyleSheet.create({
   sideMenuProfileIcon: {
     marginVertical: 20,
-    resizeMode: 'center',
     width: 100,
     height: 100,
     alignSelf: 'center',
@@ -123,6 +151,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  socialIcons: {
+    // display: 'flex',
+    flexDirection: 'row',
+    // flex: 1,
+    // flexWrap: 'wrap',
+    gap: 30,
+    marginVertical: 10,
+    justifyContent: 'center',
   },
 });
 

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   Linking,
+  Pressable,
 } from 'react-native';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import {DATA} from '../../AdminScreens/Dashboard/dash';
@@ -77,7 +78,7 @@ const Dashboard = props => {
   }, []);
 
   const EventData = data => {
-    navigation.navigate('Event Details', {eventData: data});
+    navigation.navigate('EventDetails', {eventData: data});
   };
   const openLink = async url => {
     try {
@@ -94,7 +95,7 @@ const Dashboard = props => {
   const CarouselCardItem = ({item, index}) => {
     return (
       <>
-        <TouchableOpacity onPress={() => EventData(item)}>
+        <Pressable onPress={() => EventData(item)}>
           <View style={styles.itemContainer} key={index}>
             <View>
               <Text style={styles.header}>{item.title}</Text>
@@ -137,7 +138,7 @@ const Dashboard = props => {
               </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </>
     );
   };

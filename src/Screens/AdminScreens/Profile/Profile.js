@@ -11,6 +11,7 @@ import {
   Linking,
   Platform,
   KeyboardAvoidingView,
+  PermissionsAndroid,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {globalColors} from '../../../theme/globalColors';
@@ -101,6 +102,7 @@ const Profile = () => {
     });
     Linking.openURL(url);
   };
+
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}

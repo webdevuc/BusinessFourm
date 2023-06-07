@@ -12,6 +12,7 @@ import BusinessList from '../../../Screens/AdminScreens/BusinessList/BusinessLis
 import Icons from 'react-native-vector-icons/MaterialIcons';
 // import EventDetails from '../../../Screens/AdminScreens/BusinessEvents/EventDetails';
 import LeadsDetails from '../../../Screens/UserScreens/Leads/LeadsDetails';
+import EventDetails from '../../../Screens/AdminScreens/BusinessEvents/EventDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,7 +67,7 @@ export default function DashboardStack(props) {
 
       <Stack.Screen name="Business list" component={BusinessList} />
 
-      {/* <Stack.Screen name="Event Details" component={EventDetails} /> */}
+      <Stack.Screen name="EventDetails" component={EventDetails} />
 
       <Stack.Screen name="Leads Details" component={LeadsDetails} />
     </Stack.Navigator>

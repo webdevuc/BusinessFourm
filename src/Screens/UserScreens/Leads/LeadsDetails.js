@@ -146,76 +146,41 @@ const LeadsDetails = ({route, navigation}) => {
       <View style={styles.container}>
         <View style={styles.detailsContainer}>
           <View style={{flexDirection: 'row'}}>
-            <Icons
-              name="edit"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <Icons name="edit" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Title</Text>
           </View>
           <Text style={styles.title}>{leadData.business_title}</Text>
           <View style={{flexDirection: 'row'}}>
-            <Icons
-              name="location-pin"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <Icons name="location-pin" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Address</Text>
           </View>
           <Text style={styles.title}>{leadData.address}</Text>
           <View style={{flexDirection: 'row'}}>
-            <Icons
-              name="local-phone"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <Icons name="local-phone" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Mobile Number </Text>
           </View>
           <Text style={styles.title}>{leadData.mobile_no}</Text>
 
           <View style={{flexDirection: 'row'}}>
-            <Icons
-              name="category"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <Icons name="category" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Business Category</Text>
           </View>
           <Text style={styles.title}>{leadData.business_category_name}</Text>
 
           <View style={{flexDirection: 'row'}}>
-            <Rupee
-              name="currency-rupee"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <Rupee name="currency-rupee" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Estimate</Text>
           </View>
           <Text style={styles.title}>{leadData.estimate}</Text>
 
           <View style={{flexDirection: 'row'}}>
-            <MaterialIcons
-              name="date-range"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <MaterialIcons name="date-range" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Expected Date</Text>
           </View>
           <Text style={styles.title}>{leadData.expected_date}</Text>
 
           <View style={{flexDirection: 'row'}}>
-            <Icons
-              name="description"
-              size={20}
-              color="#264596"
-              onPress={() => handleEditLeads(item)}
-            />
+            <Icons name="description" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Description</Text>
           </View>
           <Text style={styles.title}>{leadData.description}</Text>
@@ -229,7 +194,7 @@ const LeadsDetails = ({route, navigation}) => {
             marginTop: RFValue(30),
           }}>
           {leadData.who_closed == userRes ? (
-            <View style={{backgroundColor: '#ebeffa'}}>
+            <View>
               <Text style={{color: globalColors.card, fontSize: 20}}>
                 This deal has been closed
               </Text>

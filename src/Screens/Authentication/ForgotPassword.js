@@ -150,8 +150,8 @@ export default function ForgotPassword(props) {
           isOtp && (
             <View>
               <OTPTextInput
-                tintColor={globalColors.primaryTheme}
-                color={globalColors.primaryTheme}
+                tintColor={globalColors.card}
+                color={globalColors.card}
                 handleTextChange={text => setOtp(text)}
               />
             </View>
