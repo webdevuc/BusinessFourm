@@ -301,6 +301,7 @@ const DashboardAdmin = props => {
               </View>
               {lead.map((item, i) => (
                 <TouchableOpacity
+                  key={i}
                   onPress={() => leadList(item)}
                   style={styles.tableHeader}>
                   <Text style={styles.tableContent} numberOfLines={1}>

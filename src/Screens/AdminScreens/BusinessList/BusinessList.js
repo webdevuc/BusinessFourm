@@ -111,7 +111,7 @@ const BusinessList = ({navigation}) => {
               <Text style={styles.title}>{item.name} </Text>
               <Text>{item.business_category_name}</Text>
             </View>
-            <View style={{position: 'absolute', right: 0}}>
+            <View style={{position: 'absolute', right: 8, top: 5}}>
               {item.approval == 1 ? (
                 <Icons name="check" size={22} color={globalColors.darkGreen} />
               ) : (

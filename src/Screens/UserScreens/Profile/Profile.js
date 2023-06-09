@@ -66,8 +66,8 @@ const Profile = () => {
   const data = {
     location: locations,
   };
-  const cleanedString = data.location.replace(/[{} ]/g, '');
-  const keyValuePairs = cleanedString.split(',');
+  const cleanedString = data?.location?.replace(/[{} ]/g, '');
+  const keyValuePairs = cleanedString?.split(',');
   const extractedData = {};
   keyValuePairs.forEach(pair => {
     const [key, value] = pair.split(':');

@@ -23,9 +23,10 @@ import {useSelector} from 'react-redux';
 export const SLIDER_WIDTH = Dimensions.get('window').width + 90;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.74);
 import Icons from 'react-native-vector-icons/MaterialIcons';
-import Profile from 'react-native-vector-icons/Entypo';
+// import Profile from 'react-native-vector-icons/Entypo';
+import Profile from 'react-native-vector-icons/Feather';
 import reactotron from 'reactotron-react-native';
-import Calender from 'react-native-vector-icons/FontAwesome';
+import Calender from 'react-native-vector-icons/MaterialIcons';
 
 import Rupees from 'react-native-vector-icons/MaterialIcons';
 import SocialIcon from 'react-native-vector-icons/Entypo';
@@ -36,9 +37,11 @@ const Dashboard = props => {
   const navigation = useNavigation();
 
   const userRes = useSelector(state => state?.user?.data?.data?.token);
+  reactotron.log('User res--', userRes);
 
   const [asycData, setAsycData] = useState([]);
   const [leadsLength, setLeadsLength] = useState([]);
+  const [lead, setLead] = useState([]);
 
   const getData = async () => {
     try {
@@ -73,9 +76,31 @@ const Dashboard = props => {
     // setLeadsLength(resposone.data?.leads.length);
   };
 
+  const getTopLeads = async () => {
+    const resposone = await axios.get(
+      'https://ibf.instantbusinesslistings.com/api/leads/index',
+      {
+        headers: {
+          Authorization: `Bearer ${userRes}`,
+        },
+      },
+    );
+
+    reactotron.log('Resss', resposone);
+
+    setLead(resposone?.data?.leads?.slice(0, 3));
+  };
+
+  // getTopLeads();
+
   useEffect(() => {
     getData();
+    getTopLeads;
   }, []);
+
+  const leadList = data => {
+    navigation.navigate('Leads Details', {leadsData: data});
+  };
 
   const EventData = data => {
     navigation.navigate('EventDetails', {eventData: data});
@@ -115,7 +140,7 @@ const Dashboard = props => {
                   <Icons
                     name="location-pin"
                     size={20}
-                    color="#fff"
+                    color={globalColors.white}
                     style={{marginTop: 3}}
                   />
                   <Text style={styles.cardTextR} numberOfLines={2}>
@@ -124,9 +149,9 @@ const Dashboard = props => {
                 </View>
                 <View style={{flexDirection: 'row', marginTop: 15}}>
                   <Calender
-                    name="calendar-o"
-                    size={17}
-                    color="#fff"
+                    name="date-range"
+                    size={18}
+                    color={globalColors.white}
                     style={{marginTop: 3}}
                   />
                   <Text
@@ -145,12 +170,12 @@ const Dashboard = props => {
   return (
     <ScrollView contentContainerStyle={{flexGrow: 1}}>
       <View style={styles.container}>
-        <View style={{flex: 0.3}}>
+        <View style={{flex: 1}}>
           <Text
             style={{
               fontSize: 18,
               fontWeight: 'bold',
-              marginVertical: 20,
+              marginVertical: 10,
               textAlign: 'center',
               color: '#264596',
             }}>
@@ -215,12 +240,12 @@ const Dashboard = props => {
               <View
                 style={[
                   styles.card1,
-                  {marginTop: 50, backgroundColor: globalColors.card},
+                  {marginTop: RFValue(35), backgroundColor: globalColors.card},
                 ]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
                   <Text style={styles.title}>{'Business List'}</Text>
                   <View style={styles.insideText}>
-                    <Icons name="view-list" size={20} color="#264596" />
+                    <Icons name="view-list" size={22} color="#264596" />
                   </View>
                 </View>
               </View>
@@ -229,18 +254,18 @@ const Dashboard = props => {
               <View
                 style={[
                   styles.card1,
-                  {marginTop: 50, backgroundColor: globalColors.card},
+                  {marginTop: RFValue(35), backgroundColor: globalColors.card},
                 ]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
-                  <Text style={styles.title}>{'Profile'}</Text>
+                  <Text style={styles.title}>{'Profile '}</Text>
                   <View style={styles.insideText}>
-                    <Profile name="user" size={20} color="#264596" />
+                    <Profile name="user" size={22} color={globalColors.card} />
                   </View>
                 </View>
               </View>
             </TouchableOpacity>
           </View>
-
+          {/* 
           <View style={styles.row}>
             <TouchableOpacity onPress={() => openLink(fb)}>
               <View style={[{alignItems: 'center'}]}>
@@ -252,6 +277,46 @@ const Dashboard = props => {
                 <SocialIcon name="instagram" size={30} color="#d62976" />
               </View>
             </TouchableOpacity>
+          </View> */}
+
+          <View>
+            <Text style={styles.leadsTitle}>Recent Leads</Text>
+
+            <View style={styles.table}>
+              <View
+                style={[
+                  styles.tableHeader,
+                  {backgroundColor: '#b3c6ff', width: '100%'},
+                ]}>
+                <Text
+                  style={[
+                    styles.tableContent,
+                    {fontWeight: '500', fontSize: RFValue(15)},
+                  ]}>
+                  Business Title
+                </Text>
+                <Text
+                  style={[
+                    styles.tableContent,
+                    {fontWeight: '500', fontSize: RFValue(15)},
+                  ]}>
+                  Category
+                </Text>
+              </View>
+              {lead.map((item, i) => (
+                <TouchableOpacity
+                  key={i}
+                  onPress={() => leadList(item)}
+                  style={styles.tableHeader}>
+                  <Text style={styles.tableContent} numberOfLines={1}>
+                    {item?.business_title}
+                  </Text>
+                  <Text style={styles.tableContent} numberOfLines={1}>
+                    {item?.business_category_name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -323,7 +388,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap',
     gap: 20,
-    marginTop: 40,
+    marginTop: RFValue(18),
     justifyContent: 'center',
   },
 
@@ -368,6 +433,45 @@ const styles = StyleSheet.create({
     height: 126, // Set the desired height for the image
     resizeMode: 'cover',
     borderBottomLeftRadius: 8,
+  },
+
+  table: {
+    width: '90%',
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 5,
+    overflow: 'hidden',
+    // paddingHorizontal: 4,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+  },
+  tableContent: {
+    flex: 1,
+    paddingVertical: 5,
+    // textAlign: 'center',
+    paddingLeft: RFValue(15),
+    fontSize: 14,
+    color: globalColors.black,
+    // alignContent: 'center',
+    // color:'#fff'
+  },
+
+  leadsTitle: {
+    color: globalColors.black,
+    fontWeight: '500',
+    fontSize: RFValue(16),
+    justifyContent: 'center',
+    alignSelf: 'center',
+    // marginVertical: RFValue(20),
+    marginTop: RFValue(42),
+    paddingBottom: RFValue(10),
   },
 });
 

@@ -6,6 +6,7 @@ import Profile from '../../Screens/UserScreens/Profile/Profile';
 import Dashboard from '../../Screens/UserScreens/Dashboard/Dashboard';
 import Report from '../../Screens/UserScreens/Report/Report';
 import DashboardIcon from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import {Image, View} from 'react-native';
 import DashboardStack from './UserStack/DashboardStack';
 import {globalColors} from '../../theme/globalColors';
@@ -36,14 +37,14 @@ export default function UserNavigator(props) {
         },
         headerTintColor: '#fff',
         headerRight: () => (
-            <Image
-              style={{
-                width: 60,
-                height: 55,
-                marginRight: 10
-              }}
-              source={require('../../assets/mainLogo.jpg')}
-            />
+          <Image
+            style={{
+              width: 60,
+              height: 55,
+              marginRight: 10,
+            }}
+            source={require('../../assets/mainLogo.jpg')}
+          />
         ),
       })}
       drawerContent={props => <CustomSidebarMenu {...props} />}>
@@ -58,7 +59,7 @@ export default function UserNavigator(props) {
           title: 'Dashboard',
           headerRight: () => (
             <TouchableOpacity onPress={() => console.log('Icon pressed')}>
-                <Icons name="view-list" size={20} color="#264596" />
+              <Icons name="view-list" size={20} color="#264596" />
             </TouchableOpacity>
           ),
         }}
@@ -92,7 +93,21 @@ export default function UserNavigator(props) {
           ),
         }}
       />
-
+      <Drawer.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          drawerIcon: ({focused, size}) => (
+            <View style={{marginRight: -25}}>
+              <Feather
+                name={'user'}
+                size={25}
+                color={focused ? '#264596' : '#777'}
+              />
+            </View>
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 }
