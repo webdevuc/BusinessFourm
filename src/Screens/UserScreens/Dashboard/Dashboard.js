@@ -37,7 +37,6 @@ const Dashboard = props => {
   const navigation = useNavigation();
 
   const userRes = useSelector(state => state?.user?.data?.data?.token);
-  reactotron.log('User res--', userRes);
 
   const [asycData, setAsycData] = useState([]);
   const [leadsLength, setLeadsLength] = useState([]);
@@ -57,23 +56,8 @@ const Dashboard = props => {
       setAsycData(response?.data?.leads);
       setLeadsLength(response.data?.leads.length);
     } catch (error) {
-      // Handle the error here
-
       reactotron.log('Error occurred while fetching data:', error);
-      // You can also set any error state or display an error message to the user
     }
-
-    // const resposone = await axios.get(
-    //   'https://ibf.instantbusinesslistings.com/api/event/index',
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${userRes}`,
-    //     },
-    //   },
-    // );
-
-    // setAsycData(resposone?.data?.leads);
-    // setLeadsLength(resposone.data?.leads.length);
   };
 
   const getTopLeads = async () => {
@@ -86,16 +70,14 @@ const Dashboard = props => {
       },
     );
 
-    reactotron.log('Resss', resposone);
-
-    setLead(resposone?.data?.leads?.slice(0, 3));
+    setLead(resposone?.data?.leads);
   };
 
   // getTopLeads();
 
   useEffect(() => {
     getData();
-    getTopLeads;
+    getTopLeads();
   }, []);
 
   const leadList = data => {
@@ -175,7 +157,7 @@ const Dashboard = props => {
             style={{
               fontSize: 18,
               fontWeight: 'bold',
-              marginVertical: 10,
+              marginVertical: RFValue(7),
               textAlign: 'center',
               color: '#264596',
             }}>
@@ -210,7 +192,7 @@ const Dashboard = props => {
                         fontWeight: 'bold',
                         color: '#264596',
                       }}>
-                      {leadsLength}
+                      {lead.length}
                     </Text>
                   </View>
                 </View>
@@ -235,15 +217,14 @@ const Dashboard = props => {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Business list')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Report')}>
               <View
                 style={[
                   styles.card1,
                   {marginTop: RFValue(35), backgroundColor: globalColors.card},
                 ]}>
                 <View style={[styles.card2, {backgroundColor: '#fff'}]}>
-                  <Text style={styles.title}>{'Business List'}</Text>
+                  <Text style={styles.title}>{'Report'}</Text>
                   <View style={styles.insideText}>
                     <Icons name="view-list" size={22} color="#264596" />
                   </View>
@@ -278,7 +259,6 @@ const Dashboard = props => {
               </View>
             </TouchableOpacity>
           </View> */}
-
           <View>
             <Text style={styles.leadsTitle}>Recent Leads</Text>
 
@@ -303,7 +283,7 @@ const Dashboard = props => {
                   Category
                 </Text>
               </View>
-              {lead.map((item, i) => (
+              {lead.slice(0, 3).map((item, i) => (
                 <TouchableOpacity
                   key={i}
                   onPress={() => leadList(item)}
@@ -312,7 +292,8 @@ const Dashboard = props => {
                     {item?.business_title}
                   </Text>
                   <Text style={styles.tableContent} numberOfLines={1}>
-                    {item?.business_category_name}
+                    {item?.business_category_name}{' '}
+                    <Text style={styles.boldSymbol}>{' > '}</Text>
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -326,11 +307,15 @@ const Dashboard = props => {
 const styles = StyleSheet.create({
   roundCard: {
     backgroundColor: '#E7EBF0',
+    // backgroundColor: 'red',
     width: '100%',
-    flex: 0.7,
-    justifyContent: 'center',
+    flex: 1,
+    // paddingTop: RFValue(20),
+    // paddingTop: 100,
+    // justifyContent: 'center',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    // height: RFValue(380),
   },
   container: {
     flex: 1,
@@ -348,7 +333,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.29,
     shadowRadius: 4.65,
     elevation: 7,
-    height: RFPercentage(25),
+    height: RFPercentage(21),
     marginTop: 10,
     marginBottom: 10,
   },
@@ -375,7 +360,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   card2: {
-    height: 75,
+    height: RFValue(74),
     width: 100,
     borderRadius: 5,
     position: 'absolute',
@@ -430,7 +415,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '50%',
-    height: 126, // Set the desired height for the image
+    height: RFValue(80), // Set the desired height for the image
     resizeMode: 'cover',
     borderBottomLeftRadius: 8,
   },
@@ -471,7 +456,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     // marginVertical: RFValue(20),
     marginTop: RFValue(42),
-    paddingBottom: RFValue(10),
+    // paddingBottom: RFValue(10),
+    marginBottom: 10,
+  },
+  boldSymbol: {
+    fontWeight: 'bold',
+    fontSize: RFValue(17),
   },
 });
 

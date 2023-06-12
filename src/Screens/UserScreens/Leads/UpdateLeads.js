@@ -21,14 +21,9 @@ import reactotron from 'reactotron-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import {RNToasty} from 'react-native-toasty';
-import Regex from '../../../utils/validation';
 
-const AddLeads = ({props, route}) => {
+const UpdateLeads = ({props, route}) => {
   const data = route.params?.leadsData;
-
-  const updatedValue = data?.estimate?.split('.')[0];
-  const estimated = Number(updatedValue); // Output: "1234"
-
   const dataId = route.params?.leadsData?.id;
 
   const navigation = useNavigation();
@@ -98,9 +93,8 @@ const AddLeads = ({props, route}) => {
   }, []);
 
   const handleChangeTitle = text => {
-    const trimmedText = text.trimStart();
-    setTitle(trimmedText);
-    if (trimmedText === '') {
+    setTitle(text);
+    if (text === '') {
       setErrorTitle(true);
     } else {
       setErrorTitle(false);
@@ -108,9 +102,8 @@ const AddLeads = ({props, route}) => {
   };
 
   const handleChangeDescription = text => {
-    const trimmedText = text.trimStart();
-    setDescription(trimmedText);
-    if (trimmedText === '') {
+    setDescription(text);
+    if (text === '') {
       setErrorDescription(true);
     } else {
       setErrorDescription(false);
@@ -118,11 +111,8 @@ const AddLeads = ({props, route}) => {
   };
 
   const onChangeMobile = text => {
-    const trimmedText = text.trimStart(); // Remove leading and trailing whitespace
-
-    setMobile(trimmedText);
-
-    if (trimmedText === '') {
+    setMobile(text);
+    if (text === '') {
       setErrorMobile(true);
     } else {
       setErrorMobile(false);
@@ -139,11 +129,8 @@ const AddLeads = ({props, route}) => {
   };
 
   const handleEstimate = text => {
-    const trimmedText = text.trimStart();
-
-    setEstimate(trimmedText);
-
-    if (trimmedText === '') {
+    setEstimate(text);
+    if (text === '') {
       setErrorEstimate(true);
     } else {
       setErrorEstimate(false);
@@ -151,11 +138,8 @@ const AddLeads = ({props, route}) => {
   };
 
   const handleChange = text => {
-    const trimmedText = text.trimStart();
-
-    setAddress(trimmedText);
-
-    if (trimmedText === '') {
+    setAddress(text);
+    if (text === '') {
       setErrorAddress(true);
     } else {
       setErrorAddress(false);
@@ -188,13 +172,6 @@ const AddLeads = ({props, route}) => {
       position: 'bottom',
     });
     navigateToOtherPage();
-    setTitle('');
-    setMobile('');
-    setExpectedDate('');
-    setCategory('');
-    setEstimate('');
-    setAddress('');
-    setDescription('');
   };
 
   const navigateToOtherPage = () => {
@@ -203,22 +180,13 @@ const AddLeads = ({props, route}) => {
 
   const createLead = () => {
     if (title && mobile && expectedDate && category && estimate && address) {
-      if (!Regex.validateMobile(mobile)) {
-        RNToasty.Error({
-          title: 'Please enter a valid mobile number.',
-          position: 'bottom',
-          duration: 1,
-        });
-        return;
-      }
-      if (!Regex.validateNumbers(estimate)) {
-        RNToasty.Error({
-          title: 'Please enter a estimate.',
-          position: 'bottom',
-          duration: 1,
-        });
-        return;
-      }
+      setTitle('');
+      setMobile('');
+      setExpectedDate('');
+      setCategory('');
+      setEstimate('');
+      setAddress('');
+      setDescription('');
 
       addLeadsApi();
 
@@ -234,50 +202,32 @@ const AddLeads = ({props, route}) => {
   };
 
   const updateLeads = async () => {
-    try {
-      const data = {
-        business_title: title,
-        address: address,
-        mobile_no: mobile,
-        business_category: category,
-        estimate: estimate,
-        expected_date: expectedDate,
-        description: description,
-      };
+    const data = {
+      business_title: title,
+      address: address,
+      mobile_no: mobile,
+      business_category: category,
+      estimate: estimate,
+      expected_date: expectedDate,
+      description: description,
+    };
 
-      if (!Regex.validateMobile(mobile)) {
-        throw new Error('Please enter a valid mobile number.');
-      }
-
-      if (!Regex.validateNumbers(estimate)) {
-        throw new Error('Please enter an estimate.');
-      }
-
-      await axios.post(
-        `https://ibf.instantbusinesslistings.com/api/leads/${dataId}/update`,
-        data,
-        {
-          headers: {
-            'Content-type': 'application/json',
-            Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
-          },
+    await axios.post(
+      `https://ibf.instantbusinesslistings.com/api/leads/${dataId}/update`,
+      data,
+      {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
         },
-      );
-
-      RNToasty.Success({
-        title: 'Leads updated successfully.',
-        position: 'bottom',
-      });
-
-      navigateToOtherPage();
-      // addLeadsApi();
-    } catch (error) {
-      RNToasty.Error({
-        title: 'Please enter valid data',
-        position: 'bottom',
-        duration: 1,
-      });
-    }
+      },
+    );
+    RNToasty.Success({
+      title: 'leads updated successfully..',
+      position: 'bottoms',
+    });
+    navigateToOtherPage();
+    // addLeadsApi();
   };
 
   return (
@@ -296,6 +246,9 @@ const AddLeads = ({props, route}) => {
               // onChangeText={text => setTitle(text)}
               onChangeText={handleChangeTitle}
             />
+            <Text style={{color: 'red'}}>
+              {errorTitle ? <Text>Name is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={[styles.inputView]}>
@@ -310,6 +263,9 @@ const AddLeads = ({props, route}) => {
               // onChangeText={text => setTitle(text)}
               onChangeText={handleChangeDescription}
             />
+            <Text style={{color: 'red'}}>
+              {errorDescription && <Text>Description is required</Text>}
+            </Text>
           </View>
 
           <View style={styles.inputView}>
@@ -321,6 +277,9 @@ const AddLeads = ({props, route}) => {
               // onChangeText={text => setAddress(text)}
               onChangeText={handleChange}
             />
+            <Text style={{color: 'red'}}>
+              {errorAddress ? <Text>Address is required</Text> : ''}
+            </Text>
           </View>
 
           {/* <View><Text>{errorTitle ? <Text>name is required</Text>: ''}</Text></View> */}
@@ -335,6 +294,9 @@ const AddLeads = ({props, route}) => {
               maxLength={10}
               keyboardType="number-pad"
             />
+            <Text style={{color: 'red'}}>
+              {errorMobile ? <Text>Mobile number is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={styles.inputViewDropdown}>
@@ -359,6 +321,9 @@ const AddLeads = ({props, route}) => {
               }}
             />
           </View>
+          <Text style={{color: 'red'}}>
+            {errorBusinessCat ? <Text>Name is required</Text> : ''}
+          </Text>
 
           <View style={styles.inputView}>
             <TextInput
@@ -367,9 +332,12 @@ const AddLeads = ({props, route}) => {
               value={estimate}
               placeholderTextColor={globalColors.grey}
               // onChangeText={text => setEstimate(text)}
-              keyboardType="number-pad"
               onChangeText={handleEstimate}
+              keyboardType="number-pad"
             />
+            <Text style={{color: 'red'}}>
+              {errorEstimate ? <Text>Estimate is required</Text> : ''}
+            </Text>
           </View>
 
           <View style={styles.inputView}>
@@ -395,9 +363,12 @@ const AddLeads = ({props, route}) => {
                 mode="date"
                 display="default"
                 onChange={handleDateChange}
-                minimumDate={new Date()}
               />
             )}
+
+            <Text style={{color: 'red'}}>
+              {errorExpectedDate ? <Text>Date is required</Text> : ''}
+            </Text>
           </View>
 
           {data ? (
@@ -433,7 +404,7 @@ const styles = StyleSheet.create({
   inputView: {
     borderRadius: 8,
     width: '90%',
-    marginBottom: 20,
+    marginBottom: 10,
     justifyContent: 'center',
     // borderWidth: 1,
     borderColor: '#505050',
@@ -484,4 +455,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddLeads;
+export default UpdateLeads;

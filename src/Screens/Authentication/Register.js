@@ -24,9 +24,9 @@ import Regex from '../../utils/validation';
 import reactotron from 'reactotron-react-native';
 import axios from 'axios';
 import {RNToasty} from 'react-native-toasty';
-// import Geocoder from 'react-native-geocoding';
+import Geocoder from 'react-native-geocoding';
 
-// Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
+Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
 
 export default function Register(props) {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ export default function Register(props) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [gst, setGst] = useState('');
+  const [gst, setGst] = useState('27AAPFU0939F1ZV');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [category, setCategory] = useState(null);
@@ -57,9 +57,6 @@ export default function Register(props) {
   const [bussinessLong, setBussinessLong] = useState('');
   const [bussinessLat, setBussinessLat] = useState('');
 
-  // reactotron.log('LAT----', bussinessLat);
-  // reactotron.log('LONG----', bussinessLong);
-
   const [errorMessage, setErrorMessage] = useState('');
 
   const [asycData, setAsycData] = useState([]);
@@ -69,16 +66,10 @@ export default function Register(props) {
       'https://ibf.instantbusinesslistings.com/api/business-category-registration',
     );
 
-    reactotron.log(
-      'RESPONSE->',
-      JSON.stringify(response.data?.business_category),
-    );
-
     const data = response.data.business_category.map(item => ({
       label: item.business_category_name,
       value: item.id,
     }));
-    reactotron.log('DAATATATAT IDDDDD------>' + JSON.stringify(data));
     setAsycData(data);
   };
 
@@ -108,7 +99,6 @@ export default function Register(props) {
     }
 
     if (!Regex.validateMobile(mobile)) {
-      // Toast.show('Please enter a valid mobile number.', Toast.LONG);
       RNToasty.Error({
         title: 'Please enter a valid mobile number.',
         position: 'bottom',
@@ -116,9 +106,16 @@ export default function Register(props) {
       });
       return;
     }
+    if (!Regex.validateGSTNumber(gst)) {
+      RNToasty.Error({
+        title: 'Please enter a valid GST number.',
+        position: 'bottom',
+        duration: 1,
+      });
+      return;
+    }
 
     if (isEmpty(businessName)) {
-      // Toast.show('Please enter a name of business.', Toast.LONG);
       RNToasty.Error({
         title: 'Please enter a name of business.',
         position: 'bottom',
@@ -129,7 +126,6 @@ export default function Register(props) {
     }
 
     if (isEmpty(category)) {
-      // Toast.show('Select Business category.', Toast.LONG);
       RNToasty.Error({
         title: 'Select Business category.',
         position: 'bottom',
@@ -140,7 +136,6 @@ export default function Register(props) {
     }
 
     if (isEmpty(city)) {
-      // Toast.show('Please enter a city.', Toast.LONG);
       RNToasty.Error({
         title: 'Please enter a city.',
         position: 'bottom',
@@ -151,7 +146,6 @@ export default function Register(props) {
     }
 
     if (isEmpty(address)) {
-      // Toast.show('Please enter a address.', Toast.LONG);
       RNToasty.Error({
         title: 'Please enter a address.',
         position: 'bottom',
@@ -161,7 +155,6 @@ export default function Register(props) {
     }
 
     if (isEmpty(password)) {
-      // Toast.show('Please enter password .', Toast.LONG);
       RNToasty.Error({
         title: 'Please enter password .',
         position: 'bottom',
@@ -170,9 +163,17 @@ export default function Register(props) {
       return;
     }
 
-    if (password !== confirmPassword) {
-      // Toast.show('Passwords do not match .', Toast.LONG);
+    if (!Regex.validPassword(password)) {
+      RNToasty.Error({
+        title:
+          'Invalid password. Password must contain at least 8 characters including one lowercase letter, one uppercase letter, one digit, and one special character.',
+        position: 'bottom',
+        duration: 3,
+      });
+      return;
+    }
 
+    if (password !== confirmPassword) {
       RNToasty.Error({
         title: 'Passwords do not match .',
         position: 'bottom',
@@ -231,10 +232,11 @@ export default function Register(props) {
   // };
 
   const handleInputChange = text => {
-    setName(text);
+    const trimmedText = text.trimStart();
 
-    // Perform your validation logic here
-    if (text === '') {
+    setName(trimmedText);
+
+    if (trimmedText === '') {
       setIsError(true);
     } else {
       setIsError(false);
@@ -242,8 +244,11 @@ export default function Register(props) {
   };
 
   const handleEmail = text => {
-    setEmail(text);
-    if (text === '') {
+    const trimmedText = text.trimStart();
+
+    setEmail(trimmedText);
+
+    if (trimmedText === '') {
       setIsErrorEmail(true);
     } else {
       setIsErrorEmail(false);
@@ -251,8 +256,9 @@ export default function Register(props) {
   };
 
   const handleMobileNumber = text => {
-    setMobile(text);
-    if (text === '') {
+    const trimmedText = text.trimStart();
+    setMobile(trimmedText);
+    if (trimmedText === '') {
       setIsErrorM(true);
     } else {
       setIsErrorM(false);
@@ -260,8 +266,10 @@ export default function Register(props) {
   };
 
   const handleBusiness = text => {
-    setBusinessName(text);
-    if (text === '') {
+    const trimmedText = text.trimStart();
+
+    setBusinessName(trimmedText);
+    if (trimmedText === '') {
       setIsErrorB(true);
     } else {
       setIsErrorB(false);
@@ -269,8 +277,10 @@ export default function Register(props) {
   };
 
   const handleChangeCity = text => {
-    setCity(text);
-    if (text === '') {
+    const trimmedText = text.trimStart();
+
+    setCity(trimmedText);
+    if (trimmedText === '') {
       setIsErrorC(true);
     } else {
       setIsErrorC(false);
@@ -278,8 +288,10 @@ export default function Register(props) {
   };
 
   const handleChangeAddress = text => {
-    setAddress(text);
-    if (text === '') {
+    const trimmedText = text.trimStart();
+
+    setAddress(trimmedText);
+    if (trimmedText === '') {
       setIsErrorA(true);
     } else {
       setIsErrorA(false);
@@ -315,31 +327,33 @@ export default function Register(props) {
   };
 
   const handleChangeGSTNo = text => {
-    setGst(text);
-    if (text === '') {
+    const trimmedText = text.trimStart();
+
+    setGst(trimmedText);
+    if (trimmedText === '') {
       setIsErrorGst(true);
     } else {
       setIsErrorGst(false);
     }
   };
-  // useEffect(() => {
-  //   const convertAddressToLatLng = async address => {
-  //     try {
-  //       const response = await Geocoder.from(address);
-  //       const {results} = response;
-  //       if (results.length > 0) {
-  //         const {geometry} = results[0];
-  //         const {lat, lng} = geometry.location;
-  //         setBussinessLat(lat);
-  //         setBussinessLong(lng);
-  //       }
-  //     } catch (error) {
-  //       console.log('Error converting address to latlng:', error);
-  //     }
-  //   };
+  useEffect(() => {
+    const convertAddressToLatLng = async address => {
+      try {
+        const response = await Geocoder.from(address);
+        const {results} = response;
+        if (results.length > 0) {
+          const {geometry} = results[0];
+          const {lat, lng} = geometry.location;
+          setBussinessLat(lat);
+          setBussinessLong(lng);
+        }
+      } catch (error) {
+        console.log('Error converting address to latlng:', error);
+      }
+    };
 
-  //   convertAddressToLatLng(address);
-  // }, [address]);
+    convertAddressToLatLng(address);
+  }, [address]);
 
   // return (
   //   // Trigger the sendNotification function wherever needed in your app
@@ -365,9 +379,9 @@ export default function Register(props) {
               // onChangeText={name => setName(name)}
               onChangeText={handleInputChange}
             />
-            <Text style={{color: 'red'}}>
+            {/* <Text style={{color: 'red'}}>
               {isError ? <Text>Name is required</Text> : ''}
-            </Text>
+            </Text> */}
           </View>
 
           <View style={[styles.inputView]}>
@@ -382,9 +396,6 @@ export default function Register(props) {
               // onChangeText={name => setName(name)}
               onChangeText={handleEmail}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorEmail ? <Text>Email is required</Text> : ''}
-            </Text>
           </View>
 
           <View style={styles.inputView}>
@@ -398,9 +409,6 @@ export default function Register(props) {
               maxLength={10}
               keyboardType="number-pad"
             />
-            <Text style={{color: 'red'}}>
-              {isErrorM ? <Text>Mobile no is required</Text> : ''}
-            </Text>
           </View>
 
           <View style={styles.inputView}>
@@ -412,9 +420,6 @@ export default function Register(props) {
               // onChangeText={name => setBusinessName(name)}
               onChangeText={handleBusiness}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorB ? <Text>Business is required</Text> : ''}
-            </Text>
           </View>
           <View style={styles.inputViewDropdown}>
             <Dropdown
@@ -439,10 +444,6 @@ export default function Register(props) {
             />
           </View>
 
-          <Text style={{color: 'red'}}>
-            {isErrorBC ? <Text>required</Text> : ''}
-          </Text>
-
           <View style={[styles.inputView]}>
             <TextInput
               style={[styles.TextInput, isErrorGst && styles.redTextInput]}
@@ -453,9 +454,6 @@ export default function Register(props) {
               // onChangeText={address => setAddress(address)}
               maxLength={15}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorGst ? <Text>GST no. is required</Text> : ''}
-            </Text>
           </View>
 
           <View style={[styles.inputView]}>
@@ -467,9 +465,6 @@ export default function Register(props) {
               onChangeText={handleChangeCity}
               // onChangeText={city => setCity(city)}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorC ? <Text>City is required</Text> : ''}
-            </Text>
           </View>
 
           <View style={[styles.inputView]}>
@@ -480,9 +475,6 @@ export default function Register(props) {
               placeholderTextColor={globalColors.grey}
               onChangeText={handleChangeAddress}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorA ? <Text>Address is required</Text> : ''}
-            </Text>
           </View>
 
           <View style={[styles.inputView]}>
@@ -495,9 +487,6 @@ export default function Register(props) {
               onChangeText={handlePassword}
               // onChangeText={password => setPassword(password)}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorP ? <Text>Password is required</Text> : ''}
-            </Text>
           </View>
           <View style={styles.inputView}>
             <TextInput
@@ -509,9 +498,6 @@ export default function Register(props) {
               // onChangeText={password => setConfirmPassword(password)}
               onChangeText={handleConfirmPass}
             />
-            <Text style={{color: 'red'}}>
-              {isErrorCP ? <Text>Confirm Password is required</Text> : ''}
-            </Text>
           </View>
 
           <Text style={styles.errorMessage}>{errorMessage}</Text>

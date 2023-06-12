@@ -22,8 +22,10 @@
     "moment": "^2.29.4",
     "react": "18.2.0",
     "react-native": "0.71.4",
+    "react-native-calendars": "^1.1298.0",
     "react-native-element-dropdown": "^2.9.0",
     "react-native-file-viewer": "^2.1.5",
+    "react-native-geocoding": "^0.5.0",
     "react-native-gesture-handler": "^2.10.2",
     "react-native-html-to-pdf": "^0.12.0",
     "react-native-image-picker": "^5.4.0",
@@ -39,12 +41,14 @@
     "react-native-table-component": "^1.2.2",
     "react-native-toasty": "^2.0.0",
     "react-native-vector-icons": "^9.2.0",
+    "react-native-view-shot": "^3.6.0",
     "react-redux": "^8.0.7",
     "reactotron-react-native": "^5.0.3",
     "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "redux-thunk": "^2.4.2"
+    "redux-thunk": "^2.4.2",
+    "rn-fetch-blob": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

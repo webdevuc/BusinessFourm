@@ -71,12 +71,7 @@ const CustomSidebarMenu = props => {
 
   const openLink = async url => {
     try {
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await Linking.openURL(url);
-      } else {
-        reactotron.log('Cannot open the link:', url);
-      }
+      await Linking.openURL(url);
     } catch (error) {
       reactotron.log('Error opening the link:', error);
     }

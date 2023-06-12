@@ -132,21 +132,20 @@ const LeadsDetails = ({route, navigation}) => {
   };
 
   const handleChangeAmount = text => {
-    setAmountClosed(text);
-    if (text === '') {
+    const extractedNumbers = text.replace(/[^0-9]/g, '');
+    setAmountClosed(extractedNumbers);
+    if (extractedNumbers === '') {
       setErrorTitle(true);
-      // setModalVisible(true)
     } else {
       setErrorTitle(false);
     }
   };
-
   return (
     <ScrollView style={{backgroundColor: '#fff'}}>
       <View style={styles.container}>
         <View style={styles.detailsContainer}>
           <View style={{flexDirection: 'row'}}>
-            <Icons name="edit" size={20} color="#264596" />
+            <Icons name="subtitles" size={20} color="#264596" />
             <Text style={{marginLeft: 10}}>Title</Text>
           </View>
           <Text style={styles.title}>{leadData.business_title}</Text>
@@ -252,6 +251,7 @@ const LeadsDetails = ({route, navigation}) => {
                 value={amount_closed}
                 keyboardType="number-pad"
                 onChangeText={handleChangeAmount}
+                maxLength={10}
               />
             </View>
             {/* <View>

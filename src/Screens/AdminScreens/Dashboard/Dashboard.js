@@ -35,7 +35,6 @@ const DashboardAdmin = props => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
 
   const [asycData, setAsycData] = useState([]);
-  const [leadsLength, setLeadsLength] = useState([]);
   const [userLength, serUserLength] = useState([]);
   const [lead, setLead] = useState([]);
 
@@ -50,7 +49,7 @@ const DashboardAdmin = props => {
     );
 
     setAsycData(resposone?.data?.leads);
-    setLeadsLength(resposone.data?.leads.length);
+    // setLeadsLength(resposone.data?.leads.length);
   };
 
   const UserLength = async () => {
@@ -74,7 +73,9 @@ const DashboardAdmin = props => {
       },
     );
 
-    setLead(resposone?.data?.leads?.slice(0, 3));
+    //  setLentresposone.data.leads.length
+
+    setLead(resposone?.data?.leads);
   };
 
   useEffect(() => {
@@ -214,7 +215,7 @@ const DashboardAdmin = props => {
                   style={[styles.card2, {backgroundColor: globalColors.card2}]}>
                   <Text style={styles.title}>{'Leads List'}</Text>
                   <View style={styles.insideText}>
-                    <Text style={styles.showText}>{leadsLength}</Text>
+                    <Text style={styles.showText}>{lead?.length}</Text>
                   </View>
                 </View>
               </View>
@@ -299,7 +300,7 @@ const DashboardAdmin = props => {
                   Category
                 </Text>
               </View>
-              {lead.map((item, i) => (
+              {lead.slice(0, 3).map((item, i) => (
                 <TouchableOpacity
                   key={i}
                   onPress={() => leadList(item)}
@@ -308,7 +309,8 @@ const DashboardAdmin = props => {
                     {item?.business_title}
                   </Text>
                   <Text style={styles.tableContent} numberOfLines={1}>
-                    {item?.business_category_name}
+                    {item?.business_category_name}{' '}
+                    <Text style={styles.boldSymbol}>{' > '}</Text>
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -489,6 +491,10 @@ const styles = StyleSheet.create({
     color: globalColors.black,
     // alignContent: 'center',
     // color:'#fff'
+  },
+  boldSymbol: {
+    fontWeight: 'bold',
+    fontSize: RFValue(17),
   },
 
   leadsTitle: {

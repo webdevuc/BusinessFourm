@@ -119,7 +119,7 @@ const Leads = ({navigation}) => {
   };
 
   const handleEditLeads = data => {
-    navigation.navigate('Add Leads', {leadsData: data});
+    navigation.navigate('Update Leads', {leadsData: data});
   };
 
   const handleDetailsLeads = data => {
@@ -134,7 +134,9 @@ const Leads = ({navigation}) => {
             <View style={styles.rowContainer}>
               <View style={styles.businessTitleContainer}>
                 <Text style={styles.label}>Business Title</Text>
-                <Text style={styles.businessTitle}>{item.business_title}</Text>
+                <Text style={styles.businessTitle} numberOfLines={2}>
+                  {item.business_title}
+                </Text>
               </View>
 
               <View style={styles.categoryContainer}>
@@ -341,6 +343,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     elevation: 10,
+    gap: 4,
   },
   businessTitleContainer: {
     flex: 1,

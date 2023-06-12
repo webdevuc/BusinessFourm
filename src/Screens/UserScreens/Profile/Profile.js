@@ -34,8 +34,9 @@ import googleMap from '../../../assets/user.png';
 import {RNToasty} from 'react-native-toasty';
 // import Geocoder from 'react-native-geocoding';
 import {avatar, imageLink} from '../../../utils/constan';
+import Geocoder from 'react-native-geocoding';
 
-// Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
+Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
 
 const Profile = () => {
   // const [profileData, setProfileData] = useState('')
@@ -69,14 +70,14 @@ const Profile = () => {
   const cleanedString = data?.location?.replace(/[{} ]/g, '');
   const keyValuePairs = cleanedString?.split(',');
   const extractedData = {};
-  keyValuePairs.forEach(pair => {
-    const [key, value] = pair.split(':');
+  keyValuePairs?.forEach(pair => {
+    const [key, value] = pair?.split(':');
     const cleanedKey = key.trim();
     const cleanedValue = value.trim();
     extractedData[cleanedKey] = cleanedValue;
   });
-  const latitude = extractedData.lat;
-  const longitude = extractedData.long;
+  const latitude = extractedData?.lat;
+  const longitude = extractedData?.long;
 
   const handleEditProfile = () => {
     setIsEditing(true);
@@ -116,29 +117,25 @@ const Profile = () => {
     setImgUri(userData?.img);
   }, [userData]);
 
-  // useEffect(() => {
-  //   const convertAddressToLatLng = async address => {
-  //     try {
-  //       const response = await Geocoder.from(address);
-  //       const {results} = response;
-  //       if (results.length > 0) {
-  //         const {geometry} = results[0];
-  //         const {lat, lng} = geometry.location;
-
-  //         // reactotron.log('Lat---', lat);
-  //         // reactotron.log('Lng---', lng);
-  //         setLat(lat);
-  //         setLong(lng);
-  //       }
-  //     } catch (error) {
-  //       console.log('Error converting address to latlng:', error);
-  //     }
-  //   };
-  //   setTimeout(() => {
-  //     convertAddressToLatLng(address);
-  //   }, 5000);
-
-  // }, [address]);
+  useEffect(() => {
+    const convertAddressToLatLng = async address => {
+      try {
+        const response = await Geocoder.from(address);
+        const {results} = response;
+        if (results.length > 0) {
+          const {geometry} = results[0];
+          const {lat, lng} = geometry.location;
+          setLat(lat);
+          setLong(lng);
+        }
+      } catch (error) {
+        console.log('Error converting address to latlng:', error);
+      }
+    };
+    // setTimeout(() => {
+    convertAddressToLatLng(address);
+    // }, 5000);
+  }, [address, userData]);
 
   const handleSaveProfile = async () => {
     try {
@@ -148,11 +145,14 @@ const Profile = () => {
       formData.append('mobile_no', mobile);
       formData.append('gst', gst);
       formData.append('address', address);
-      formData.append('image', {
-        uri: pic && pic.assets && pic.assets[0] && pic.assets[0].uri,
-        name: pic && pic.assets && pic.assets[0] && pic.assets[0].fileName,
-        type: pic && pic.assets && pic.assets[0] && pic.assets[0].type,
-      });
+      formData.append('location', `{lat: ${lat}, long: ${long}}`);
+      if (pic) {
+        formData.append('image', {
+          uri: pic && pic.assets && pic.assets[0] && pic.assets[0].uri,
+          name: pic && pic.assets && pic.assets[0] && pic.assets[0].fileName,
+          type: pic && pic.assets && pic.assets[0] && pic.assets[0].type,
+        });
+      }
 
       const response = await fetch(
         `https://ibf.instantbusinesslistings.com/api/update-user/${userId}`,
@@ -166,38 +166,12 @@ const Profile = () => {
         },
       );
 
-      setName(response?.name);
-      setRole(response?.role);
-      setEmail(response?.email);
-      setMobile(response?.mobile_no);
-      setAddress(response?.address);
-      setGst(response?.gst);
-      setImgUri(response?.gst);
-      // const payload = {
-      //   name: name,
-      //   email: email,
-      //   mobile_no: mobile,
-      //   gst: gst,
-      //   address: address,
-      //   image: fileName,
-
-      // };
-
-      // await axios.post(
-      //   `https://ibf.instantbusinesslistings.com/api/update-user/${userId}`,
-      //   payload,
-      //   {
-      //     headers: {
-      //       'Content-type': 'multipart/form-data',
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   },
-      // );
-
-      RNToasty.Success({
-        title: 'Profile updated successfully..',
-        position: 'bottom',
-      });
+      if (response.status == 200) {
+        RNToasty.Success({
+          title: 'Profile updated successfully',
+          position: 'bottom',
+        });
+      }
 
       getProfile();
       // navigateToOtherPage();
@@ -213,46 +187,21 @@ const Profile = () => {
     }
   };
 
-  const [selectedImage, setSelectedImage] = useState(null);
-
   const handleSelectImage = () => {
     const options = {quality: 0.1};
     launchImageLibrary(options, res => {
-      // let formData = new FormData();
-      // reactotron.log('Image---', res);
-
       setPic(res);
 
       setPhoto(res && res.assets && res.assets[0] && res.assets[0].uri);
-
-      // formData.append('profileImage', {
-      //   uri: res && res.assets && res.assets[0] && res.assets[0].uri,
-      //   name: res && res.assets && res.assets[0] && res.assets[0].fileName,
-      //   type: res && res.assets && res.assets[0] && res.assets[0].type,
-      // });
-
-      // dispatch(uploadProfileImage(formData));
     });
   };
 
-  // const handleSelectImage = () => {
-  //   const options = {quality: 0.5};
-  //   launchImageLibrary(options, res => {
-  //     reactotron.log('HAndled profileee---', res);
-
-  //     setPic(res && res.assets && res.assets[0] && res.assets[0].uri);
-  //   });
-  // };
-
-  const editProfile = () => {
-    // Alert.alert("Clicked.....")
-  };
   const googleMaps = () => {
     const scheme = Platform.select({
       ios: 'maps://0,0?q=',
       android: 'geo:0,0?q=',
     });
-    const latLng = `${latitude},${longitude}`;
+    const latLng = `${lat},${long}`;
     const label = 'Custom Label';
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
@@ -299,25 +248,14 @@ const Profile = () => {
 
           <View style={styles.header}>
             <View style={styles.container1}>
-              {/* <Image
-                style={styles.image}
-                source={{
-                  // uri: imgUri ? `${imageLink}${imgUri}` : avatar,
-                  uri: photo?.length > 1 ? photo : `${imageLink}${imgUri}`,
-                }}
-                resizeMode={'contain'}
-              /> */}
-
-              {photo?.length > 1 && (
+              {photo?.length > 1 ? (
                 <Image style={styles.image} source={{uri: photo}} />
-              )}
-              {imgUri?.length > 1 && (
+              ) : imgUri?.length > 1 ? (
                 <Image
                   style={styles.image}
                   source={{uri: `${imageLink}${imgUri}`}}
                 />
-              )}
-              {!photo && !imgUri && (
+              ) : (
                 <Image style={styles.image} source={{uri: avatar}} />
               )}
 
@@ -326,13 +264,11 @@ const Profile = () => {
                   <TouchableOpacity
                     onPress={handleSelectImage}
                     style={styles.uploadBtn}>
-                    {selectedImage && (
-                      <Image
-                        source={{uri: selectedImage}}
-                        style={{width: 200, height: 200}}
-                      />
-                    )}
-                    <MaterialIcons name="edit" size={20} color="white" />
+                    <MaterialIcons
+                      name="edit"
+                      size={20}
+                      color={globalColors.black}
+                    />
                   </TouchableOpacity>
                 </View>
               )}
@@ -480,21 +416,15 @@ const styles = StyleSheet.create({
     width: 80,
     position: 'relative',
     borderRadius: 999,
-    overflow: 'hidden',
   },
   uploadBtnContainer: {
-    opacity: 0.7,
     position: 'absolute',
     right: 10,
-    bottom: 5,
-    // zIndex: 1000,
-    // backgroundColor: 'lightgrey',
-    // width: '100%',
-    // height: '25%',
-    // padding: 2,
-    // backgroundColor: 'red',
-    // borderWidth: 0,
-    // borderRadius: 50,
+    bottom: -2,
+    borderRadius: 50,
+    padding: 2,
+    backgroundColor: '#fff',
+    zIndex: 10000,
   },
   uploadBtn: {
     display: 'flex',

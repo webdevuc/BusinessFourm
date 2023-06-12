@@ -9,7 +9,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StackNavigator} from './AllStack/AllStack';
 import Login from '../../Screens/Authentication/Login';
 
-export function RootNavigator() {
+const RootNavigator = () => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
   const userRole = useSelector(state => state?.user?.data?.data?.user.role);
 
@@ -21,4 +21,6 @@ export function RootNavigator() {
       <StackNavigator />
     </NavigationContainer>
   );
-}
+};
+
+export default RootNavigator;

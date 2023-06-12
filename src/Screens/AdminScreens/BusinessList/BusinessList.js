@@ -25,6 +25,8 @@ import reactotron from 'reactotron-react-native';
 import {Pressable} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import EmptyComponent from '../../../Components/Common/EmptyComponent';
+import mainLogo from '../../../assets/mainLogo.jpg';
+import {imageLink} from '../../../utils/constan';
 
 const BusinessList = ({navigation}) => {
   const userRes = useSelector(state => state?.user?.data?.data?.token);
@@ -98,7 +100,7 @@ const BusinessList = ({navigation}) => {
             marginVertical: 10,
           }}>
           <Image
-            source={require('../../../assets/mainLogo.jpg')}
+            source={item.img ? {uri: `${imageLink}${item.img}`} : mainLogo}
             style={{width: 70, height: 70, borderRadius: 10}}
           />
           <View
@@ -107,6 +109,7 @@ const BusinessList = ({navigation}) => {
               // flexDirection: 'row',
               // justifyContent: 'space-between',
             }}>
+            {reactotron.log('Item--', item.img)}
             <View>
               <Text style={styles.title}>{item.name} </Text>
               <Text>{item.business_category_name}</Text>
@@ -159,7 +162,7 @@ const BusinessList = ({navigation}) => {
         ) : (
           <FlatList
             ListEmptyComponent={() => {
-              return <EmptyComponent title={'  No data Found.'} />;
+              return <EmptyComponent title={'No data Found.'} />;
             }}
             contentContainerStyle={styles.listContentContainer}
             data={results}

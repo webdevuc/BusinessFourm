@@ -11,6 +11,7 @@ import {Image, View} from 'react-native';
 import DashboardStack from './UserStack/DashboardStack';
 import {globalColors} from '../../theme/globalColors';
 import AddLeads from '../../Screens/UserScreens/Leads/AddLeads';
+import MyCertificate from '../../Screens/UserScreens/Certificate/MyCertificate';
 const Drawer = createDrawerNavigator();
 export default function UserNavigator(props) {
   const CustomIconComponent = ({focused, name}) => {
@@ -87,6 +88,15 @@ export default function UserNavigator(props) {
       <Drawer.Screen
         name="Report"
         component={Report}
+        options={{
+          drawerIcon: ({focused, size}) => (
+            <CustomIconComponent focused={focused} name="list-alt" />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Certificate"
+        component={MyCertificate}
         options={{
           drawerIcon: ({focused, size}) => (
             <CustomIconComponent focused={focused} name="list-alt" />

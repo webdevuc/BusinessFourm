@@ -8,11 +8,25 @@ let Regex = {
   },
 
   validateMobile: function (text) {
-    return /^[0-9]{10}$/.test(text);
+    return /^(?:\+?91)?[6-9]\d{9}$/.test(text);
+  },
+
+  validateNumbers: str => {
+    return /^[0-9]+$/.test(str);
   },
 
   validateOTP: function (text) {
     return /^.{4,}$/.test(text);
+  },
+  validateGSTNumber: gstNumber => {
+    return /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/.test(
+      gstNumber,
+    );
+  },
+  validPassword: password => {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[a-zA-Z\d!@#$%^&*()]{8,}$/.test(
+      password,
+    );
   },
 
   validateName: function (val) {

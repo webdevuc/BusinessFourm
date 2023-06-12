@@ -24,9 +24,10 @@ import reactotron from 'reactotron-react-native';
 // import Geocoder from 'react-native-geocoding';
 import {RFValue} from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/Feather';
+import Geocoder from 'react-native-geocoding';
 
 // import googleMap from '../../../assets/ maps.png';
-// Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
+Geocoder.init('AIzaSyAgwrhO1Dx7gAI-o8KFn3BQHma89-7AUjg');
 // location-pin
 
 const Profile = () => {
@@ -67,27 +68,35 @@ const Profile = () => {
     // Alert.alert("Clicked.....")
   };
 
-  // useEffect(() => {
-  //   const convertAddressToLatLng = async address => {
-  //     try {
-  //       const response = await Geocoder.from(address);
-  //       const {results} = response;
-  //       if (results.length > 0) {
-  //         const {geometry} = results[0];
-  //         const {lat, lng} = geometry.location;
+  useEffect(() => {
+    const convertAddressToLatLng = async address => {
+      try {
+        const response = await Geocoder.from(address);
+        const {results} = response;
+        if (results.length > 0) {
+          const {geometry} = results[0];
+          const {lat, lng} = geometry.location;
 
-  //         reactotron.log('Lat---', lat);
-  //         reactotron.log('Lng---', lng);
-  //         setLat(lat);
-  //         setLong(lng);
-  //       }
-  //     } catch (error) {
-  //       console.log('Error converting address to latlng:', error);
-  //     }
-  //   };
+          reactotron.log('Lat---', lat);
+          reactotron.log('Lng---', lng);
+          setLat(lat);
+          setLong(lng);
+        }
+      } catch (error) {
+        console.log('Error converting address to latlng:', error);
+      }
+    };
 
-  //   convertAddressToLatLng(address);
-  // }, [address]);
+    convertAddressToLatLng('Patil Galli balekundri bk');
+    // convertAddressToLatLng(address);
+
+    //   Geocoder.from('Los Angeles, CA')
+    // .then(json => {
+    //   var location = json.results[0].geometry.location;
+    //   console.log(location);
+    // })
+    // .catch(error => console.warn(error));
+  }, [address]);
 
   const googleMaps = () => {
     const scheme = Platform.select({
@@ -166,7 +175,11 @@ const Profile = () => {
                         style={{width: 200, height: 200}}
                       />
                     )}
-                    <MaterialIcons name="edit" size={20} color="white" />
+                    <MaterialIcons
+                      name="edit"
+                      size={20}
+                      color={globalColors.black}
+                    />
                   </TouchableOpacity>
                 </View>
               )}
@@ -291,13 +304,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     position: 'relative',
     borderRadius: 999,
-    overflow: 'hidden',
   },
   uploadBtnContainer: {
-    opacity: 0.7,
     position: 'absolute',
     right: 10,
-    bottom: 5,
+    bottom: -2,
+    borderRadius: 50,
+    padding: 2,
+    backgroundColor: '#fff',
+    zIndex: 10000,
   },
   uploadBtn: {
     display: 'flex',
