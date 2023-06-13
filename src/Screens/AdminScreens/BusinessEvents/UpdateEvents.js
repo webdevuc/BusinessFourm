@@ -27,7 +27,7 @@ import {avatar, imageLink} from '../../../utils/constan';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-const AddEvents = ({props, route}) => {
+const UpdateEvents = ({props, route}) => {
   const editEvent = route.params?.editEventData;
   const editEventID = route.params?.editEventData?.id;
 
@@ -136,18 +136,6 @@ const AddEvents = ({props, route}) => {
       type: pic && pic.assets && pic.assets[0] && pic.assets[0].type,
     });
 
-    // const data = await axios.post(
-    //   'https://ibf.instantbusinesslistings.com/api/event/store',
-    //   payload,
-    //   {
-    //     headers: {
-    //       'Content-type': 'application/json',
-    //       Authorization: `Bearer ${userRes}`, // notice the Bearer before your token
-    //     },
-    //     body: formData,
-    //   },
-    // );
-
     const response = await fetch(
       `https://ibf.instantbusinesslistings.com/api/event/store`,
       {
@@ -225,21 +213,7 @@ const AddEvents = ({props, route}) => {
         },
         body: formData,
       },
-
-      
     );
-
-    // const response = await fetch(
-    //   `https://ibf.instantbusinesslistings.com/api/event/update/${editEventID}`,
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data',
-    //       Authorization: `Bearer ${userRes}`,
-    //     },
-    //     body: formData,
-    //   },
-    // );
 
     RNToasty.Success({
       title: 'Events updated successfully..',
@@ -261,11 +235,7 @@ const AddEvents = ({props, route}) => {
   const handleSelectImage = () => {
     const options = {quality: 0.5};
     launchImageLibrary(options, res => {
-      // reactotron.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",res)
-      // setPic(res && res.assets && res.assets[0] && res.assets[0].uri);
-
       setPic(res);
-
       setPhoto(res && res.assets && res.assets[0] && res.assets[0].uri);
     });
   };
@@ -327,7 +297,6 @@ const AddEvents = ({props, route}) => {
                 editable={false}
                 placeholderTextColor={globalColors.grey}
                 onChangeText={onChangeExpectedDAte}
-               
               />
             </TouchableOpacity>
 
@@ -391,7 +360,16 @@ const AddEvents = ({props, route}) => {
             />
           )}
 
-          
+          {/* {photo?.length > 1 ? (
+            <Image style={styles.image} source={{uri: photo}} />
+          ) : imgUri?.length > 1 ? (
+            <Image
+              style={styles.image}
+              source={{uri: `${imageLink}${imgUri}`}}
+            />
+          ) : (
+            <Image style={styles.image} source={{uri: avatar}} />
+          )} */}
 
           <View style={styles.uploadBtnContainer}>
             <TouchableOpacity
@@ -501,5 +479,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddEvents;
-
+export default UpdateEvents;

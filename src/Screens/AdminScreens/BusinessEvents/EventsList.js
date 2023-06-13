@@ -1,15 +1,4 @@
-// import { View, Text } from 'react-native'
-// import React from 'react'
 
-// const Events = () => {
-//   return (
-//     <View>
-//       <Text>Events</Text>
-//     </View>
-//   )
-// }
-
-// export default Events
 
 import React, {useState, useEffect} from 'react';
 import {
@@ -46,6 +35,7 @@ import ModalLeads from '../../../utils/ModalLeads';
 import AlertModal from '../../../Components/Common/AlertModal';
 import {RNToasty} from 'react-native-toasty';
 import DeleteModal from '../../../Components/Common/DeleteModal';
+import {useIsFocused} from '@react-navigation/native';
 
 const {width} = Dimensions.get('window');
 const itemWidth = width * 0.9;
@@ -66,6 +56,9 @@ const EventsList = ({props, navigation}) => {
   const [deleteId, setDeleteId] = useState(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const [asycData, setAsycData] = useState([]);
+  
+
+  const isFocused = useIsFocused();
 
   const getData = async () => {
     setLoader(true);
@@ -84,9 +77,16 @@ const EventsList = ({props, navigation}) => {
     setLoader(false);
   };
 
+
   useEffect(() => {
-    getData();
-  }, []);
+    if (isFocused) {
+      getData();
+    }
+  }, [isFocused]);
+
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   const handleModalVisible = data => {
     setData(data);
@@ -140,7 +140,8 @@ const EventsList = ({props, navigation}) => {
   };
 
   const handleEditEvents = data => {
-    navigation.navigate('Add Events', {editEventData: data});
+    reactotron.log("Edit event data------->",data)
+    navigation.navigate('Update Events', {editEventData: data});
   };
 
   const renderItem = ({item}) => (

@@ -171,12 +171,25 @@ const Leads = ({navigation}) => {
               )}
             </View>
 
-            {followers.map(ele =>
+            {/* {followers.map(ele =>
               ele.id === item.id ? (
                 <View style={styles.followingContainer}>
                   <Text style={styles.followingText}>Following</Text>
                 </View>
               ) : null,
+            )} */}
+
+            {item.who_closed != null ? (
+              <View
+                style={[styles.followingContainer, {backgroundColor: 'red'}]}>
+                <Text style={styles.followingText}>Deal closed</Text>
+              </View>
+            ) : (
+              item.followers.includes(userID) && (
+                <View style={styles.followingContainer}>
+                  <Text style={styles.followingText}>Following</Text>
+                </View>
+              )
             )}
           </View>
         </View>

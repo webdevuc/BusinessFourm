@@ -23,6 +23,7 @@ import AddEvents from '../../../Screens/AdminScreens/BusinessEvents/AddEvents';
 import LeadsDetails from '../../../Screens/UserScreens/Leads/LeadsDetails';
 import EventDetails from '../../../Screens/AdminScreens/BusinessEvents/EventDetails';
 import UpdateLeads from '../../../Screens/UserScreens/Leads/UpdateLeads';
+import UpdateEvents from '../../../Screens/AdminScreens/BusinessEvents/UpdateEvents';
 // import EventsList from '../../../Screens/AdminScreens/BusinessEvents/EventsList';
 
 const Stack = createNativeStackNavigator();
@@ -144,6 +145,8 @@ export default function DashboardStack(props) {
 
       <Stack.Screen name="Leads Details" component={LeadsDetails} />
       <Stack.Screen name="EventDetails" component={EventDetails} />
+
+      <Stack.Screen name="Update Events" component={UpdateEvents} />
     </Stack.Navigator>
   );
 }
